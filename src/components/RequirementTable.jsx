@@ -2,10 +2,7 @@ import { Pencil, Trash2 } from "lucide-react";
 
 function RequirementTable({ requirements, osFilter, onEdit, onDelete }) {
   const visibleRequirements = requirements.filter(
-    (requirement) =>
-      osFilter === "both" ||
-      requirement.appliesToOS === "both" ||
-      requirement.appliesToOS === osFilter,
+    (requirement) => requirement.appliesTo === osFilter,
   );
 
   return (
@@ -13,14 +10,7 @@ function RequirementTable({ requirements, osFilter, onEdit, onDelete }) {
       <thead>
         <tr className="border-b border-gray-200 text-gray-500">
           <th className="px-4 py-2 font-medium">Requirement Name</th>
-          {osFilter === "both" ? (
-            <>
-              <th className="px-4 py-2 font-medium">Windows Min</th>
-              <th className="px-4 py-2 font-medium">Macbook Min</th>
-            </>
-          ) : (
-            <th className="px-4 py-2 font-medium">Min Value</th>
-          )}
+          <th className="px-4 py-2 font-medium">Min Value</th>
           <th className="px-4 py-2 font-medium">Type</th>
           <th className="px-4 py-2 font-medium">Required</th>
           <th className="px-4 py-2 font-medium">Actions</th>
@@ -30,16 +20,7 @@ function RequirementTable({ requirements, osFilter, onEdit, onDelete }) {
         {visibleRequirements.map((requirement) => (
           <tr key={requirement.id} className="border-b border-gray-100">
             <td className="px-4 py-2 text-gray-900">{requirement.name}</td>
-            {osFilter === "both" ? (
-              <>
-                <td className="px-4 py-2 text-gray-600">{requirement.windowsMin}</td>
-                <td className="px-4 py-2 text-gray-600">{requirement.macosMin}</td>
-              </>
-            ) : (
-              <td className="px-4 py-2 text-gray-600">
-                {osFilter === "macos" ? requirement.macosMin : requirement.windowsMin}
-              </td>
-            )}
+            <td className="px-4 py-2 text-gray-600">{requirement.minValue}</td>
             <td className="px-4 py-2 text-gray-600">{requirement.type}</td>
             <td className="px-4 py-2 text-gray-600">{requirement.required ? "Yes" : "No"}</td>
             <td className="px-4 py-2">

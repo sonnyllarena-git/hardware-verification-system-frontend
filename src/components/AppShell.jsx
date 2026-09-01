@@ -1,6 +1,6 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { LayoutDashboard, ClipboardList, Settings, ShieldCheck, Download } from "lucide-react";
-import logoIcon from "../tcp logo/TheCreditPros - Orange Navy.png";
+import logoIcon from "../tcp logo/Icon-Circle-Orange-Navy.png";
 
 const NAV_ITEMS = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -13,7 +13,9 @@ function AppShell() {
   return (
     <div className="flex min-h-screen flex-col md:flex-row">
       <aside className="bg-gray-900 p-4 text-white md:w-64">
-        <img src={logoIcon} alt="TheCreditPros" className="mb-6 h-8 w-auto" />
+        <div className="mx-auto mb-6 w-fit rounded-full bg-white p-[7.68px]">
+          <img src={logoIcon} alt="TheCreditPros" className="h-12 w-12" />
+        </div>
         <nav className="flex gap-2 md:flex-col">
           {NAV_ITEMS.map((item) => (
             <NavLink

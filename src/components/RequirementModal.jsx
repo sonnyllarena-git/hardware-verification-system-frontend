@@ -3,10 +3,9 @@ import Modal from "./Modal";
 
 const TYPE_OPTIONS = ["os", "cpu", "ram", "storage", "internet", "screen", "hardware"];
 
-const APPLIES_TO_OS_OPTIONS = [
-  { value: "windows", label: "Windows Only" },
-  { value: "macos", label: "Macbook Only" },
-  { value: "both", label: "Both" },
+const APPLIES_TO_OPTIONS = [
+  { value: "windows", label: "Windows" },
+  { value: "macos", label: "Macbook" },
 ];
 
 const generateRequirementId = () => Date.now();
@@ -14,9 +13,8 @@ const generateRequirementId = () => Date.now();
 const emptyRequirement = {
   name: "",
   type: TYPE_OPTIONS[0],
-  appliesToOS: "both",
-  windowsMin: "",
-  macosMin: "",
+  appliesTo: "windows",
+  minValue: "",
   maxValue: "",
   required: true,
   description: "",
@@ -65,11 +63,11 @@ function RequirementModal({ requirement, onSave, onClose }) {
         <label className="block text-sm">
           <span className="mb-1 block font-medium text-gray-700">Applies To</span>
           <select
-            value={form.appliesToOS}
-            onChange={(event) => updateField("appliesToOS", event.target.value)}
+            value={form.appliesTo}
+            onChange={(event) => updateField("appliesTo", event.target.value)}
             className="w-full rounded-md border border-gray-300 px-3 py-2"
           >
-            {APPLIES_TO_OS_OPTIONS.map((option) => (
+            {APPLIES_TO_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>
@@ -77,26 +75,15 @@ function RequirementModal({ requirement, onSave, onClose }) {
           </select>
         </label>
 
-        <div className="flex gap-3">
-          <label className="block flex-1 text-sm">
-            <span className="mb-1 block font-medium text-gray-700">Windows Min</span>
-            <input
-              type="text"
-              value={form.windowsMin}
-              onChange={(event) => updateField("windowsMin", event.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2"
-            />
-          </label>
-          <label className="block flex-1 text-sm">
-            <span className="mb-1 block font-medium text-gray-700">Macbook Min</span>
-            <input
-              type="text"
-              value={form.macosMin}
-              onChange={(event) => updateField("macosMin", event.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2"
-            />
-          </label>
-        </div>
+        <label className="block text-sm">
+          <span className="mb-1 block font-medium text-gray-700">Min Value</span>
+          <input
+            type="text"
+            value={form.minValue}
+            onChange={(event) => updateField("minValue", event.target.value)}
+            className="w-full rounded-md border border-gray-300 px-3 py-2"
+          />
+        </label>
 
         <label className="block text-sm">
           <span className="mb-1 block font-medium text-gray-700">Max Value (optional)</span>

@@ -1,11 +1,22 @@
+import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Check, X, Monitor, Apple } from "lucide-react";
-import { MOCK_RESULTS, COMPLIANCE_REQUIREMENTS } from "../services/resultsService";
+import { fetchResults, COMPLIANCE_REQUIREMENTS } from "../services/resultsService";
 import Badge from "../components/Badge";
 
 function ResultDetailPage() {
   const { id } = useParams();
-  const result = MOCK_RESULTS.find((item) => String(item.id) === id);
+  const [results, setResults] = useState(null);
+
+  useEffect(() => {
+    fetchResults().then(setResults);
+  }, []);
+
+  if (results === null) {
+    return <p className="text-sm text-gray-500">Loading…</p>;
+  }
+
+  const result = results.find((item) => String(item.id) === id);
 
   if (!result) {
     return <p className="text-sm text-gray-500">Result not found.</p>;

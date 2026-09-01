@@ -7,12 +7,11 @@ import RequirementModal from "../components/RequirementModal";
 const OS_TABS = [
   { value: "windows", label: "Windows" },
   { value: "macos", label: "Macbook" },
-  { value: "both", label: "Both" },
 ];
 
 function SettingsPage() {
   const [requirements, setRequirements] = useState(REQUIREMENTS_CONFIG);
-  const [osFilter, setOsFilter] = useState("both");
+  const [osFilter, setOsFilter] = useState("windows");
   const [editingRequirement, setEditingRequirement] = useState(null);
   const [isAdding, setIsAdding] = useState(false);
   const [justSaved, setJustSaved] = useState(false);

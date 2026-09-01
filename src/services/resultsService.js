@@ -1,3 +1,29 @@
+export const COMPLIANCE_REQUIREMENTS = [
+  {
+    key: "osVersion",
+    label: "OS Version",
+    check: (specs) => {
+      const version = specs.osVersion ?? "";
+      if (version.startsWith("macOS")) {
+        return parseFloat(version.replace("macOS ", "")) >= 12;
+      }
+      return version === "Windows 11" || version === "Windows 10";
+    },
+  },
+  { key: "cpuCores", label: "CPU Cores (4+)", check: (specs) => specs.cpuCores >= 4 },
+  { key: "ram", label: "RAM (8GB+)", check: (specs) => specs.ram >= 8 },
+  { key: "storageGb", label: "Storage (256GB+)", check: (specs) => specs.storageGb >= 256 },
+  {
+    key: "internetDown",
+    label: "Internet Down (15 Mbps+)",
+    check: (specs) => specs.internetDown >= 15,
+  },
+  { key: "internetUp", label: "Internet Up (5 Mbps+)", check: (specs) => specs.internetUp >= 5 },
+  { key: "screenResolution", label: "Screen (720p+)", check: (specs) => specs.screenHeight >= 720 },
+  { key: "webcam", label: "Webcam", check: (specs) => specs.webcam === true },
+  { key: "headset", label: "Headset", check: (specs) => specs.headset === true },
+];
+
 export const MOCK_RESULTS = [
   {
     id: 1,
@@ -5,6 +31,19 @@ export const MOCK_RESULTS = [
     email: "john.doe@example.com",
     status: "PASS",
     submittedDate: "2026-08-31",
+    osFamily: "windows",
+    specs: {
+      osVersion: "Windows 11",
+      cpuCores: 8,
+      ram: 16,
+      storageGb: 512,
+      internetDown: 42,
+      internetUp: 12,
+      screenResolution: "1920x1080",
+      screenHeight: 1080,
+      webcam: true,
+      headset: true,
+    },
   },
   {
     id: 2,
@@ -12,6 +51,19 @@ export const MOCK_RESULTS = [
     email: "jane.smith@example.com",
     status: "FAIL",
     submittedDate: "2026-08-31",
+    osFamily: "windows",
+    specs: {
+      osVersion: "Windows 10",
+      cpuCores: 2,
+      ram: 4,
+      storageGb: 128,
+      internetDown: 8,
+      internetUp: 2,
+      screenResolution: "1280x720",
+      screenHeight: 720,
+      webcam: false,
+      headset: true,
+    },
   },
   {
     id: 3,
@@ -19,6 +71,19 @@ export const MOCK_RESULTS = [
     email: "mike.j@example.com",
     status: "PASS",
     submittedDate: "2026-08-30",
+    osFamily: "macos",
+    specs: {
+      osVersion: "macOS 14",
+      cpuCores: 6,
+      ram: 16,
+      storageGb: 256,
+      internetDown: 25,
+      internetUp: 8,
+      screenResolution: "1920x1080",
+      screenHeight: 1080,
+      webcam: true,
+      headset: true,
+    },
   },
   {
     id: 4,
@@ -26,6 +91,19 @@ export const MOCK_RESULTS = [
     email: "sarah.lee@example.com",
     status: "FAIL",
     submittedDate: "2026-08-30",
+    osFamily: "windows",
+    specs: {
+      osVersion: "Windows 10",
+      cpuCores: 4,
+      ram: 8,
+      storageGb: 256,
+      internetDown: 10,
+      internetUp: 5,
+      screenResolution: "1366x768",
+      screenHeight: 768,
+      webcam: true,
+      headset: false,
+    },
   },
   {
     id: 5,
@@ -33,6 +111,37 @@ export const MOCK_RESULTS = [
     email: "alex.chen@example.com",
     status: "PASS",
     submittedDate: "2026-08-29",
+    osFamily: "macos",
+    specs: {
+      osVersion: "macOS 13",
+      cpuCores: 8,
+      ram: 32,
+      storageGb: 1024,
+      internetDown: 100,
+      internetUp: 20,
+      screenResolution: "2560x1440",
+      screenHeight: 1440,
+      webcam: true,
+      headset: true,
+    },
+  },
+  {
+    id: 6,
+    name: "Priya Patel",
+    email: "priya.patel@example.com",
+    status: "PENDING",
+    submittedDate: null,
+    osFamily: null,
+    specs: null,
+  },
+  {
+    id: 7,
+    name: "Tom Nguyen",
+    email: "tom.nguyen@example.com",
+    status: "PENDING",
+    submittedDate: null,
+    osFamily: null,
+    specs: null,
   },
 ];
 

@@ -4,6 +4,7 @@ import DashboardPage from "./pages/DashboardPage";
 import ResultsListPage from "./pages/ResultsListPage";
 import ResultDetailPage from "./pages/ResultDetailPage";
 import SettingsPage from "./pages/SettingsPage";
+import DownloadPage from "./pages/DownloadPage";
 import AppShell from "./components/AppShell";
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
         <Route path="/results" element={<ResultsListPage />} />
         <Route path="/results/:id" element={<ResultDetailPage />} />
         <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/download" element={<DownloadPage />} />
       </Route>
     </Routes>
   );

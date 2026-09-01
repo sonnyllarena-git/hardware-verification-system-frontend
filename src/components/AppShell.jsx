@@ -1,26 +1,31 @@
 import { NavLink, Outlet } from "react-router-dom";
+import { LayoutDashboard, ClipboardList, Settings, ShieldCheck, Download } from "lucide-react";
+import logoIcon from "../tcp logo/TheCreditPros - Orange Navy.png";
 
 const NAV_ITEMS = [
-  { to: "/dashboard", label: "Dashboard" },
-  { to: "/results", label: "Results" },
-  { to: "/settings", label: "Settings" },
+  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/results", label: "Results", icon: ClipboardList },
+  { to: "/download", label: "Download", icon: Download },
+  { to: "/settings", label: "Settings", icon: Settings },
 ];
 
 function AppShell() {
   return (
     <div className="flex min-h-screen flex-col md:flex-row">
       <aside className="bg-gray-900 p-4 text-white md:w-64">
+        <img src={logoIcon} alt="TheCreditPros" className="mb-6 h-8 w-auto" />
         <nav className="flex gap-2 md:flex-col">
           {NAV_ITEMS.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
-                `rounded-md px-3 py-2 text-sm font-medium ${
+                `flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium ${
                   isActive ? "bg-gray-700 text-white" : "text-gray-300 hover:bg-gray-800"
                 }`
               }
             >
+              <item.icon className="h-4 w-4" />
               {item.label}
             </NavLink>
           ))}
@@ -29,7 +34,10 @@ function AppShell() {
 
       <div className="flex-1">
         <header className="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
-          <span className="text-lg font-semibold text-gray-900">TCP Hardware Check</span>
+          <span className="flex items-center gap-2 text-lg font-semibold text-gray-900">
+            <ShieldCheck className="h-5 w-5 text-blue-600" />
+            TCP Hardware Check
+          </span>
           <div className="flex items-center gap-3">
             <span className="text-sm text-gray-600">Sarah (HR Manager)</span>
             <button

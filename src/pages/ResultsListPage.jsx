@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { KeyRound } from "lucide-react";
 import { MOCK_RESULTS } from "../services/resultsService";
+import Badge from "../components/Badge";
+import Modal from "../components/Modal";
 
 const COLUMNS = [
   { key: "name", label: "Name" },
@@ -9,11 +12,19 @@ const COLUMNS = [
   { key: "submittedDate", label: "Submitted Date" },
 ];
 
+const generateApiKey = () =>
+  Array.from({ length: 4 }, () => Math.random().toString(36).slice(2, 8))
+    .join("-")
+    .toUpperCase();
+
+const generateApiKeyExpiry = () => new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toDateString();
+
 function ResultsListPage() {
   const [sortKey, setSortKey] = useState("submittedDate");
   const [sortDirection, setSortDirection] = useState("desc");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [searchText, setSearchText] = useState("");
+  const [apiKeyModal, setApiKeyModal] = useState(null);
 
   const handleSort = (key) => {
     if (key === sortKey) {
@@ -22,6 +33,10 @@ function ResultsListPage() {
       setSortKey(key);
       setSortDirection("asc");
     }
+  };
+
+  const handleGenerateApiKey = (result) => {
+    setApiKeyModal({ name: result.name, key: generateApiKey(), expires: generateApiKeyExpiry() });
   };
 
   const filteredResults = MOCK_RESULTS.filter((result) => {
@@ -34,12 +49,14 @@ function ResultsListPage() {
 
   const sortedResults = [...filteredResults].sort((a, b) => {
     const direction = sortDirection === "asc" ? 1 : -1;
-    if (a[sortKey] > b[sortKey]) return direction;
-    if (a[sortKey] < b[sortKey]) return -direction;
+    const left = a[sortKey] ?? "";
+    const right = b[sortKey] ?? "";
+    if (left > right) return direction;
+    if (left < right) return -direction;
     return 0;
   });
 
-  const escapeCsvField = (value) => `"${String(value).replace(/"/g, '""')}"`;
+  const escapeCsvField = (value) => `"${String(value ?? "").replace(/"/g, '""')}"`;
 
   const handleExport = () => {
     const header = COLUMNS.map((column) => escapeCsvField(column.label)).join(",");
@@ -76,6 +93,7 @@ function ResultsListPage() {
           <option value="ALL">All statuses</option>
           <option value="PASS">PASS</option>
           <option value="FAIL">FAIL</option>
+          <option value="PENDING">PENDING</option>
         </select>
         <button
           type="button"
@@ -107,25 +125,45 @@ function ResultsListPage() {
             <tr key={result.id} className="border-b border-gray-100">
               <td className="px-4 py-2 text-gray-900">{result.name}</td>
               <td className="px-4 py-2 text-gray-600">{result.email}</td>
-              <td
-                className={
-                  result.status === "PASS"
-                    ? "px-4 py-2 font-medium text-green-600"
-                    : "px-4 py-2 font-medium text-red-600"
-                }
-              >
-                {result.status}
-              </td>
-              <td className="px-4 py-2 text-gray-600">{result.submittedDate}</td>
               <td className="px-4 py-2">
-                <Link to={`/results/${result.id}`} className="text-sm font-medium text-blue-600">
-                  View
-                </Link>
+                <Badge status={result.status} />
+              </td>
+              <td className="px-4 py-2 text-gray-600">{result.submittedDate ?? "—"}</td>
+              <td className="px-4 py-2">
+                <div className="flex items-center gap-3">
+                  {result.status === "PENDING" ? (
+                    <span className="text-sm text-gray-400">Awaiting submission</span>
+                  ) : (
+                    <Link
+                      to={`/results/${result.id}`}
+                      className="text-sm font-medium text-blue-600"
+                    >
+                      View
+                    </Link>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => handleGenerateApiKey(result)}
+                    className="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-gray-900"
+                    title="Generate API Key"
+                  >
+                    <KeyRound className="h-3.5 w-3.5" />
+                  </button>
+                </div>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      {apiKeyModal && (
+        <Modal title={`API Key — ${apiKeyModal.name}`} onClose={() => setApiKeyModal(null)}>
+          <p className="mb-2 rounded-md bg-gray-100 px-3 py-2 font-mono text-sm text-gray-900">
+            {apiKeyModal.key}
+          </p>
+          <p className="text-sm text-gray-500">Expires {apiKeyModal.expires}</p>
+        </Modal>
+      )}
     </div>
   );
 }

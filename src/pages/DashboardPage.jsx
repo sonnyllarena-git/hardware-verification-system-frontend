@@ -9,12 +9,14 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { Users, CircleCheck, CircleX, Clock, Monitor, Apple } from "lucide-react";
 import {
   MOCK_RESULTS,
   DAILY_BREAKDOWN,
   WEEKLY_BREAKDOWN,
   MONTHLY_BREAKDOWN,
 } from "../services/resultsService";
+import Card from "../components/Card";
 
 const RANGE_OPTIONS = [
   { key: "daily", label: "Daily", data: DAILY_BREAKDOWN },
@@ -26,21 +28,34 @@ function DashboardPage() {
   const [range, setRange] = useState("daily");
   const passCount = MOCK_RESULTS.filter((result) => result.status === "PASS").length;
   const failCount = MOCK_RESULTS.filter((result) => result.status === "FAIL").length;
+  const pendingCount = MOCK_RESULTS.filter((result) => result.status === "PENDING").length;
+  const windowsCount = MOCK_RESULTS.filter((result) => result.osFamily === "windows").length;
+  const macosCount = MOCK_RESULTS.filter((result) => result.osFamily === "macos").length;
+  const osPercent = (count) => Math.round((count / MOCK_RESULTS.length) * 100);
   const chartData = RANGE_OPTIONS.find((option) => option.key === range).data;
 
   return (
     <div>
       <h1 className="mb-4 text-2xl font-semibold text-gray-900">Dashboard</h1>
 
-      <div className="mb-6 flex gap-4">
-        <div className="rounded-lg border border-gray-200 bg-white px-6 py-4">
-          <p className="text-sm text-gray-500">Pass</p>
-          <p className="text-2xl font-semibold text-green-600">{passCount}</p>
-        </div>
-        <div className="rounded-lg border border-gray-200 bg-white px-6 py-4">
-          <p className="text-sm text-gray-500">Fail</p>
-          <p className="text-2xl font-semibold text-red-600">{failCount}</p>
-        </div>
+      <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-4">
+        <Card label="Total" value={MOCK_RESULTS.length} icon={Users} />
+        <Card label="Pass" value={passCount} valueClassName="text-green-600" icon={CircleCheck} />
+        <Card label="Fail" value={failCount} valueClassName="text-red-600" icon={CircleX} />
+        <Card label="Pending" value={pendingCount} valueClassName="text-gray-600" icon={Clock} />
+      </div>
+
+      <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-4">
+        <Card
+          label="Windows Submitted"
+          value={`${windowsCount} (${osPercent(windowsCount)}%)`}
+          icon={Monitor}
+        />
+        <Card
+          label="Macbook Submitted"
+          value={`${macosCount} (${osPercent(macosCount)}%)`}
+          icon={Apple}
+        />
       </div>
 
       <div className="mb-4 flex gap-2">

@@ -23,6 +23,7 @@ function SettingsPage() {
   const [issuedKey, setIssuedKey] = useState(null);
   const [issueError, setIssueError] = useState(null);
   const [issuing, setIssuing] = useState(false);
+  const [copyStatus, setCopyStatus] = useState("idle");
 
   const handleGenerateKey = async () => {
     setIssuing(true);
@@ -30,6 +31,7 @@ function SettingsPage() {
     try {
       const data = await generateApiKey({ name: applicantName, email: applicantEmail });
       setIssuedKey(data);
+      setCopyStatus("idle");
       setApplicantName("");
       setApplicantEmail("");
     } catch (err) {
@@ -39,7 +41,27 @@ function SettingsPage() {
     }
   };
 
-  const handleCopyKey = () => navigator.clipboard.writeText(issuedKey.api_key);
+  const handleCopyKey = async () => {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(issuedKey.api_key);
+      } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = issuedKey.api_key;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+      }
+      setCopyStatus("copied");
+    } catch {
+      setCopyStatus("error");
+    } finally {
+      setTimeout(() => setCopyStatus("idle"), 5000);
+    }
+  };
 
   const handleSaveEdit = (updated) => {
     setRequirements((current) =>
@@ -163,17 +185,25 @@ function SettingsPage() {
 
       {issuedKey && (
         <Modal title="API Key Generated" onClose={() => setIssuedKey(null)}>
-          <p className="mb-2 rounded-md bg-gray-100 px-3 py-2 font-mono text-sm text-gray-900">
+          <p className="mb-2 break-all rounded-md bg-gray-100 px-3 py-2 font-mono text-sm text-gray-900">
             {issuedKey.api_key}
           </p>
-          <p className="mb-4 text-sm text-gray-500">
-            Expires {new Date(issuedKey.expires_at).toDateString()}
-          </p>
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <p className="text-sm text-gray-500">
+              Expires {new Date(issuedKey.expires_at).toDateString()}
+            </p>
+            {copyStatus === "copied" && (
+              <span className="text-sm text-green-600">Copied to clipboard.</span>
+            )}
+            {copyStatus === "error" && (
+              <span className="text-sm text-red-600">Copy failed.</span>
+            )}
+          </div>
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={handleCopyKey}
-              className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white"
+              className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
             >
               Copy to Clipboard
             </button>

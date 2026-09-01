@@ -1,21 +1,7 @@
 import { Monitor, Apple } from "lucide-react";
 
-const DOWNLOAD_OPTIONS = [
-  {
-    key: "windows",
-    label: "Windows",
-    icon: Monitor,
-    fileName: "Hardware_Checker.exe",
-    worksOn: "Works on: Windows 10, 11",
-  },
-  {
-    key: "macos",
-    label: "Macbook",
-    icon: Apple,
-    fileName: "Hardware_Checker.dmg",
-    worksOn: "Works on: macOS 12+",
-  },
-];
+const API_ORIGIN = import.meta.env.VITE_API_BASE_URL.replace(/\/api\/?$/, "");
+const DOWNLOAD_URL = `${API_ORIGIN}/downloads/Hardware_Checker.exe`;
 
 function DownloadPage() {
   return (
@@ -24,17 +10,34 @@ function DownloadPage() {
       <p className="mb-6 text-sm text-gray-500">Download the version for your computer.</p>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        {DOWNLOAD_OPTIONS.map((option) => (
-          <div
-            key={option.key}
-            className="flex flex-col items-center gap-3 rounded-lg border border-gray-200 bg-white p-8 text-center"
+        <div className="flex flex-col items-center gap-3 rounded-lg border border-gray-200 bg-white p-8 text-center">
+          <Monitor className="h-12 w-12 text-gray-700" />
+          <p className="text-lg font-semibold text-gray-900">Windows</p>
+          <p className="font-mono text-sm text-gray-600">Hardware_Checker.exe</p>
+          <p className="text-sm text-gray-500">Works on: Windows 10, 11 · ~71 MB</p>
+          <a
+            href={DOWNLOAD_URL}
+            download="Hardware_Checker.exe"
+            className="mt-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white"
           >
-            <option.icon className="h-12 w-12 text-gray-700" />
-            <p className="text-lg font-semibold text-gray-900">{option.label}</p>
-            <p className="font-mono text-sm text-gray-600">{option.fileName}</p>
-            <p className="text-sm text-gray-500">{option.worksOn}</p>
+            Download Now
+          </a>
+          <div className="mt-4 w-full rounded-md bg-gray-50 p-3 text-left text-sm text-gray-600">
+            <p className="mb-1 font-semibold text-gray-900">How to use:</p>
+            <ol className="list-decimal space-y-1 pl-5">
+              <li>Get your API key from Settings → &quot;Issue Applicant API Key&quot;</li>
+              <li>Run the downloaded file</li>
+              <li>Paste your API key when prompted</li>
+              <li>Results appear in your dashboard</li>
+            </ol>
           </div>
-        ))}
+        </div>
+
+        <div className="flex flex-col items-center gap-3 rounded-lg border border-gray-200 bg-gray-100 p-8 text-center">
+          <Apple className="h-12 w-12 text-gray-400" />
+          <p className="text-lg font-semibold text-gray-900">Macbook</p>
+          <p className="text-sm italic text-gray-500">Coming in Phase 2.2</p>
+        </div>
       </div>
     </div>
   );

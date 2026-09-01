@@ -1,7 +1,7 @@
 import { Monitor, Apple } from "lucide-react";
 
 const API_ORIGIN = import.meta.env.VITE_API_BASE_URL.replace(/\/api\/?$/, "");
-const DOWNLOAD_URL = `${API_ORIGIN}/downloads/Hardware_Checker.exe`;
+const DOWNLOAD_URL = `${API_ORIGIN}/downloads/Hardware_Checker.zip`;
 
 function DownloadPage() {
   return (
@@ -13,11 +13,11 @@ function DownloadPage() {
         <div className="flex flex-col items-center gap-3 rounded-lg border border-gray-200 bg-white p-8 text-center">
           <Monitor className="h-12 w-12 text-gray-700" />
           <p className="text-lg font-semibold text-gray-900">Windows</p>
-          <p className="font-mono text-sm text-gray-600">Hardware_Checker.exe</p>
-          <p className="text-sm text-gray-500">Works on: Windows 10, 11 · ~71 MB</p>
+          <p className="font-mono text-sm text-gray-600">Hardware_Checker.zip</p>
+          <p className="text-sm text-gray-500">Works on: Windows 10, 11 · ~31 MB</p>
           <a
             href={DOWNLOAD_URL}
-            download="Hardware_Checker.exe"
+            download="Hardware_Checker.zip"
             className="mt-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white"
           >
             Download Now
@@ -26,7 +26,8 @@ function DownloadPage() {
             <p className="mb-1 font-semibold text-gray-900">How to use:</p>
             <ol className="list-decimal space-y-1 pl-5">
               <li>Get your API key from Settings → &quot;Issue Applicant API Key&quot;</li>
-              <li>Run the downloaded file</li>
+              <li>Extract the zip file</li>
+              <li>Run Hardware_Checker.exe</li>
               <li>Paste your API key when prompted</li>
               <li>Results appear in your dashboard</li>
             </ol>

@@ -5,7 +5,7 @@ import { getCurrentUser, logout } from "../services/authService";
 
 const NAV_ITEMS = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/results", label: "Results", icon: ClipboardList },
+  { to: "/applicants", label: "Applicants", icon: ClipboardList },
   { to: "/download", label: "Download", icon: Download },
   { to: "/settings", label: "Settings", icon: Settings },
 ];

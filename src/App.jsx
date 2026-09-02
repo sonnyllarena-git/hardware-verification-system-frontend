@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
-import ResultsListPage from "./pages/ResultsListPage";
+import ApplicantsPage from "./pages/ApplicantsPage";
 import ResultDetailPage from "./pages/ResultDetailPage";
 import SettingsPage from "./pages/SettingsPage";
 import DownloadPage from "./pages/DownloadPage";
@@ -26,7 +26,7 @@ function App() {
         }
       >
         <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/results" element={<ResultsListPage />} />
+        <Route path="/applicants" element={<ApplicantsPage />} />
         <Route path="/results/:id" element={<ResultDetailPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/download" element={<DownloadPage />} />

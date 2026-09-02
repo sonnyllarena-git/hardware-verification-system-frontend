@@ -28,8 +28,8 @@ function ResultDetailPage() {
 
   return (
     <div>
-      <Link to="/results" className="mb-4 inline-block text-sm text-gray-500">
-        &larr; Back to Results
+      <Link to="/applicants" className="mb-4 inline-block text-sm text-gray-500">
+        &larr; Back to Applicants
       </Link>
 
       <div className="mb-6 flex items-center justify-between">

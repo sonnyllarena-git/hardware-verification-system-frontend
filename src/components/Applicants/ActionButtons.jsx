@@ -14,7 +14,10 @@ function isLinkExpired(apiKeyExpiresAt) {
 }
 
 function GenerateLinkButton({ applicant, busy, onGenerate }) {
-  const enabled = applicant.status === "pending_email" || isLinkExpired(applicant.apiKeyExpiresAt);
+  const enabled =
+    applicant.status === "pending_email" ||
+    applicant.status === "fail" ||
+    isLinkExpired(applicant.apiKeyExpiresAt);
   return (
     <button
       type="button"

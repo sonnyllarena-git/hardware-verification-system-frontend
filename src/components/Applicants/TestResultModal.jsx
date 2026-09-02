@@ -38,7 +38,17 @@ function TestResultModal({ applicant, onClose }) {
               <SpecRow label="OS" value={result.specs.osVersion} />
               <SpecRow label="CPU Cores" value={result.specs.cpuCores} />
               <SpecRow label="RAM (GB)" value={result.specs.ram} />
-              <SpecRow label="Storage (GB)" value={result.specs.storageGb} />
+              <SpecRow label="Total Storage (GB)" value={`${result.specs.storageGb} GB`} />
+              {result.specs.storageDrives?.length > 1 && (
+                <div>
+                  <dt className="text-gray-500">Storage Drives</dt>
+                  <dd className="text-gray-900">
+                    {result.specs.storageDrives.map((gb, index) => (
+                      <div key={index}>{`Drive ${index + 1}: ${gb} GB`}</div>
+                    ))}
+                  </dd>
+                </div>
+              )}
               <SpecRow label="Screen" value={result.specs.screenResolution} />
               <SpecRow label="Internet Down (Mbps)" value={result.specs.internetDown} />
               <SpecRow label="Internet Up (Mbps)" value={result.specs.internetUp} />

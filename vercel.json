@@ -11,15 +11,7 @@
   ],
   "routes": [
     {
-      "src": "/assets/.*",
-      "dest": "/assets/$1"
-    },
-    {
-      "src": "/.*\\..*",
-      "dest": "/$0"
-    },
-    {
-      "src": "/.*",
+      "src": "/(.*)",
       "dest": "/index.html"
     }
   ]

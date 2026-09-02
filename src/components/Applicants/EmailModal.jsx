@@ -23,6 +23,8 @@ Please click the link below to install our Chrome extension and run the verifica
 
 ${link}
 
+API Key: ${applicant.apiKey ?? ""}
+
 The link will expire in 7 days.
 
 If you have any issues, contact your IT department.

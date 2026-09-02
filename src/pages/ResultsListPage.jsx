@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { KeyRound } from "lucide-react";
-import { fetchResults } from "../services/resultsService";
+import { KeyRound, Key, Trash2 } from "lucide-react";
+import { fetchResults, deleteResult } from "../services/resultsService";
+import { expireApiKey } from "../services/applicantsService";
 import Badge from "../components/Badge";
 import Modal from "../components/Modal";
 
@@ -27,6 +28,10 @@ function ResultsListPage() {
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [searchText, setSearchText] = useState("");
   const [apiKeyModal, setApiKeyModal] = useState(null);
+  const [confirmDelete, setConfirmDelete] = useState(null);
+  const [confirmExpire, setConfirmExpire] = useState(null);
+  const [actionError, setActionError] = useState(null);
+  const [actionBusy, setActionBusy] = useState(false);
 
   useEffect(() => {
     fetchResults()
@@ -45,6 +50,39 @@ function ResultsListPage() {
 
   const handleGenerateApiKey = (result) => {
     setApiKeyModal({ name: result.name, key: generateApiKey(), expires: generateApiKeyExpiry() });
+  };
+
+  const closeConfirmModals = () => {
+    setConfirmDelete(null);
+    setConfirmExpire(null);
+    setActionError(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    setActionBusy(true);
+    setActionError(null);
+    try {
+      await deleteResult(confirmDelete.id);
+      setResults((current) => current.filter((result) => result.id !== confirmDelete.id));
+      setConfirmDelete(null);
+    } catch (err) {
+      setActionError(err.message);
+    } finally {
+      setActionBusy(false);
+    }
+  };
+
+  const handleConfirmExpire = async () => {
+    setActionBusy(true);
+    setActionError(null);
+    try {
+      await expireApiKey(confirmExpire.id);
+      setConfirmExpire(null);
+    } catch (err) {
+      setActionError(err.message);
+    } finally {
+      setActionBusy(false);
+    }
   };
 
   const filteredResults = results.filter((result) => {
@@ -106,7 +144,7 @@ function ResultsListPage() {
         <button
           type="button"
           onClick={handleExport}
-          className="rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700"
+          className="cursor-pointer rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
         >
           Export CSV
         </button>
@@ -155,10 +193,26 @@ function ResultsListPage() {
                     <button
                       type="button"
                       onClick={() => handleGenerateApiKey(result)}
-                      className="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-gray-900"
+                      className="flex cursor-pointer items-center gap-1 text-sm font-medium text-gray-600 transition-colors hover:text-gray-900"
                       title="Generate API Key"
                     >
                       <KeyRound className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setConfirmExpire(result)}
+                      className="flex cursor-pointer items-center gap-1 text-sm font-medium text-amber-600 transition-colors hover:text-amber-800"
+                      title="Expire API Key"
+                    >
+                      <Key className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setConfirmDelete(result)}
+                      className="flex cursor-pointer items-center gap-1 text-sm font-medium text-red-600 transition-colors hover:text-red-800"
+                      title="Delete Result"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
                     </button>
                   </div>
                 </td>
@@ -174,6 +228,60 @@ function ResultsListPage() {
             {apiKeyModal.key}
           </p>
           <p className="text-sm text-gray-500">Expires {apiKeyModal.expires}</p>
+        </Modal>
+      )}
+
+      {confirmDelete && (
+        <Modal title="Delete Result" onClose={closeConfirmModals}>
+          <p className="mb-4 text-sm text-gray-600">
+            Delete the result for <strong>{confirmDelete.name}</strong>? This also revokes their API
+            key and cannot be undone.
+          </p>
+          {actionError && <p className="mb-3 text-sm text-red-600">{actionError}</p>}
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={handleConfirmDelete}
+              disabled={actionBusy}
+              className="cursor-pointer rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {actionBusy ? "Deleting…" : "Delete"}
+            </button>
+            <button
+              type="button"
+              onClick={closeConfirmModals}
+              className="cursor-pointer text-sm font-medium text-gray-600 transition-colors hover:text-gray-900"
+            >
+              Cancel
+            </button>
+          </div>
+        </Modal>
+      )}
+
+      {confirmExpire && (
+        <Modal title="Expire API Key" onClose={closeConfirmModals}>
+          <p className="mb-4 text-sm text-gray-600">
+            Immediately expire the API key for <strong>{confirmExpire.name}</strong>? They will not
+            be able to submit results with this key again.
+          </p>
+          {actionError && <p className="mb-3 text-sm text-red-600">{actionError}</p>}
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={handleConfirmExpire}
+              disabled={actionBusy}
+              className="cursor-pointer rounded-md bg-amber-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {actionBusy ? "Expiring…" : "Expire Key"}
+            </button>
+            <button
+              type="button"
+              onClick={closeConfirmModals}
+              className="cursor-pointer text-sm font-medium text-gray-600 transition-colors hover:text-gray-900"
+            >
+              Cancel
+            </button>
+          </div>
         </Modal>
       )}
     </div>

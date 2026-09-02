@@ -24,14 +24,16 @@ function SettingsPage() {
   const [issueError, setIssueError] = useState(null);
   const [issuing, setIssuing] = useState(false);
   const [copyStatus, setCopyStatus] = useState("idle");
+  const [linkCopyStatus, setLinkCopyStatus] = useState("idle");
 
   const handleGenerateKey = async () => {
     setIssuing(true);
     setIssueError(null);
     try {
       const data = await generateApiKey({ name: applicantName, email: applicantEmail });
-      setIssuedKey(data);
+      setIssuedKey({ ...data, name: applicantName, email: applicantEmail });
       setCopyStatus("idle");
+      setLinkCopyStatus("idle");
       setApplicantName("");
       setApplicantEmail("");
     } catch (err) {
@@ -41,13 +43,13 @@ function SettingsPage() {
     }
   };
 
-  const handleCopyKey = async () => {
+  const copyToClipboard = async (text, setStatus) => {
     try {
       if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(issuedKey.api_key);
+        await navigator.clipboard.writeText(text);
       } else {
         const textarea = document.createElement("textarea");
-        textarea.value = issuedKey.api_key;
+        textarea.value = text;
         textarea.style.position = "fixed";
         textarea.style.opacity = "0";
         document.body.appendChild(textarea);
@@ -55,13 +57,16 @@ function SettingsPage() {
         document.execCommand("copy");
         document.body.removeChild(textarea);
       }
-      setCopyStatus("copied");
+      setStatus("copied");
     } catch {
-      setCopyStatus("error");
+      setStatus("error");
     } finally {
-      setTimeout(() => setCopyStatus("idle"), 5000);
+      setTimeout(() => setStatus("idle"), 5000);
     }
   };
+
+  const handleCopyKey = () => copyToClipboard(issuedKey.api_key, setCopyStatus);
+  const handleCopyLink = () => copyToClipboard(checkPageLink, setLinkCopyStatus);
 
   const handleSaveEdit = (updated) => {
     setRequirements((current) =>
@@ -81,6 +86,14 @@ function SettingsPage() {
     setRequirements((current) => current.filter((requirement) => requirement.id !== id));
     setJustSaved(false);
   };
+
+  const checkPageLink = issuedKey
+    ? `${window.location.origin}/check?${new URLSearchParams({
+        apiKey: issuedKey.api_key,
+        name: issuedKey.name,
+        email: issuedKey.email,
+      }).toString()}`
+    : "";
 
   return (
     <div>
@@ -112,7 +125,7 @@ function SettingsPage() {
             type="button"
             onClick={handleGenerateKey}
             disabled={issuing || !applicantName || !applicantEmail}
-            className="rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
+            className="cursor-pointer rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {issuing ? "Generating…" : "Generate API Key"}
           </button>
@@ -128,8 +141,8 @@ function SettingsPage() {
             onClick={() => setOsFilter(tab.value)}
             className={
               osFilter === tab.value
-                ? "rounded-md bg-gray-900 px-3 py-1.5 text-sm font-medium text-white"
-                : "rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700"
+                ? "cursor-pointer rounded-md bg-gray-900 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-gray-800"
+                : "cursor-pointer rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
             }
           >
             {tab.label}
@@ -150,7 +163,7 @@ function SettingsPage() {
         <button
           type="button"
           onClick={() => setIsAdding(true)}
-          className="flex items-center gap-1 rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700"
+          className="flex cursor-pointer items-center gap-1 rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
         >
           <Plus className="h-4 w-4" />
           Add New Requirement
@@ -158,7 +171,7 @@ function SettingsPage() {
         <button
           type="button"
           onClick={() => setJustSaved(true)}
-          className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white"
+          className="cursor-pointer rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
         >
           Save All Changes
         </button>
@@ -195,15 +208,13 @@ function SettingsPage() {
             {copyStatus === "copied" && (
               <span className="text-sm text-green-600">Copied to clipboard.</span>
             )}
-            {copyStatus === "error" && (
-              <span className="text-sm text-red-600">Copy failed.</span>
-            )}
+            {copyStatus === "error" && <span className="text-sm text-red-600">Copy failed.</span>}
           </div>
-          <div className="flex items-center gap-3">
+          <div className="mb-4 flex items-center gap-3">
             <button
               type="button"
               onClick={handleCopyKey}
-              className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+              className="cursor-pointer rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
             >
               Copy to Clipboard
             </button>
@@ -211,6 +222,27 @@ function SettingsPage() {
               Go to Download page →
             </Link>
           </div>
+
+          <p className="mb-1 text-sm font-medium text-gray-700">Shareable applicant link</p>
+          <div className="flex items-center gap-3">
+            <input
+              type="text"
+              value={checkPageLink}
+              readOnly
+              className="flex-1 rounded-md border border-gray-300 bg-gray-50 px-3 py-2 font-mono text-xs text-gray-900"
+            />
+            <button
+              type="button"
+              onClick={handleCopyLink}
+              className="cursor-pointer whitespace-nowrap rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+            >
+              Copy Link
+            </button>
+          </div>
+          {linkCopyStatus === "copied" && (
+            <span className="text-sm text-green-600">Link copied to clipboard.</span>
+          )}
+          {linkCopyStatus === "error" && <span className="text-sm text-red-600">Copy failed.</span>}
         </Modal>
       )}
     </div>

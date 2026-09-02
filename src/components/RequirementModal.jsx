@@ -100,8 +100,10 @@ function RequirementModal({ requirement, onSave, onClose }) {
           <button
             type="button"
             onClick={() => updateField("required", !form.required)}
-            className={`rounded-full px-3 py-1 text-xs font-medium ${
-              form.required ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"
+            className={`cursor-pointer rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+              form.required
+                ? "bg-green-100 text-green-700 hover:bg-green-200"
+                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
             }`}
           >
             {form.required ? "Yes" : "No"}
@@ -122,13 +124,13 @@ function RequirementModal({ requirement, onSave, onClose }) {
           <button
             type="button"
             onClick={onClose}
-            className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700"
+            className="cursor-pointer rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white"
+            className="cursor-pointer rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
           >
             {isEdit ? "Save" : "Create"}
           </button>

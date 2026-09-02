@@ -10,3 +10,12 @@ export async function generateApiKey({ name, email }) {
     throw new Error(err.response?.data?.error ?? "Failed to generate API key");
   }
 }
+
+export async function expireApiKey(id) {
+  try {
+    const { data } = await axios.post(`${API_BASE_URL}/applicants/${id}/expire-key`);
+    return data;
+  } catch (err) {
+    throw new Error(err.response?.data?.error ?? "Failed to expire API key");
+  }
+}

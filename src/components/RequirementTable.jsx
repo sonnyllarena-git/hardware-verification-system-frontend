@@ -28,7 +28,7 @@ function RequirementTable({ requirements, osFilter, onEdit, onDelete }) {
                 <button
                   type="button"
                   onClick={() => onEdit(requirement)}
-                  className="flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-800"
+                  className="flex cursor-pointer items-center gap-1 text-sm font-medium text-blue-600 transition-colors hover:text-blue-800"
                 >
                   <Pencil className="h-3.5 w-3.5" />
                   Edit
@@ -36,7 +36,7 @@ function RequirementTable({ requirements, osFilter, onEdit, onDelete }) {
                 <button
                   type="button"
                   onClick={() => onDelete(requirement.id)}
-                  className="flex items-center gap-1 text-sm font-medium text-red-600 hover:text-red-800"
+                  className="flex cursor-pointer items-center gap-1 text-sm font-medium text-red-600 transition-colors hover:text-red-800"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                   Delete

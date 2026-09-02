@@ -7,6 +7,14 @@ export async function fetchResults() {
   return data;
 }
 
+export async function deleteResult(id) {
+  try {
+    await axios.delete(`${API_BASE_URL}/results/${id}`);
+  } catch (err) {
+    throw new Error(err.response?.data?.error ?? "Failed to delete result");
+  }
+}
+
 export const COMPLIANCE_REQUIREMENTS = [
   {
     key: "osVersion",

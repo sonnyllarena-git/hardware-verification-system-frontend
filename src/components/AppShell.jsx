@@ -1,6 +1,7 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { LayoutDashboard, ClipboardList, Settings, ShieldCheck, Download } from "lucide-react";
 import logoIcon from "../tcp logo/Icon-Circle-Orange-Navy.png";
+import { getCurrentUser, logout } from "../services/authService";
 
 const NAV_ITEMS = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -10,6 +11,13 @@ const NAV_ITEMS = [
 ];
 
 function AppShell() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
+
   return (
     <div className="flex min-h-screen flex-col md:flex-row">
       <aside className="bg-gray-900 p-4 text-white md:w-64">
@@ -41,10 +49,11 @@ function AppShell() {
             TCP Hardware Check
           </span>
           <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-600">Sarah (HR Manager)</span>
+            <span className="text-sm text-gray-600">{getCurrentUser()}</span>
             <button
               type="button"
-              className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700"
+              onClick={handleLogout}
+              className="cursor-pointer rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
             >
               Logout
             </button>

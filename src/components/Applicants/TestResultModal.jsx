@@ -5,11 +5,16 @@ import { COMPLIANCE_REQUIREMENTS } from "../../services/resultsService";
 // submittedAt comes back as a UTC timestamptz; format it in Eastern explicitly (rather than
 // the viewer's own browser/OS timezone via a bare toLocaleString()) so it reads the same
 // wall-clock time for every HR/IT reviewer regardless of where they open the dashboard from.
+// Intl.DateTimeFormat throws if dateStyle/timeStyle are mixed with individual field options
+// like timeZoneName, so this spells out the fields instead of using the style shorthand.
 function formatResultTime(value) {
   return new Date(value).toLocaleString("en-US", {
     timeZone: "America/New_York",
-    dateStyle: "medium",
-    timeStyle: "short",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
     timeZoneName: "short",
   });
 }

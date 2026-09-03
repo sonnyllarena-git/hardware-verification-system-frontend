@@ -7,12 +7,17 @@ function formatDateTime(value) {
 
 // Same field TestResultModal shows as result.submittedAt — kept in Eastern Time here too so
 // the two views of the same submission never disagree on what time it happened.
+// Intl.DateTimeFormat throws if dateStyle/timeStyle are mixed with individual field options
+// like timeZoneName, so this spells out the fields instead of using the style shorthand.
 function formatResultTime(value) {
   return value
     ? new Date(value).toLocaleString("en-US", {
         timeZone: "America/New_York",
-        dateStyle: "medium",
-        timeStyle: "short",
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
         timeZoneName: "short",
       })
     : "—";

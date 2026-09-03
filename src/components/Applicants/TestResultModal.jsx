@@ -2,6 +2,18 @@ import Modal from "../Modal";
 import Badge from "../Badge";
 import { COMPLIANCE_REQUIREMENTS } from "../../services/resultsService";
 
+// submittedAt comes back as a UTC timestamptz; format it in Eastern explicitly (rather than
+// the viewer's own browser/OS timezone via a bare toLocaleString()) so it reads the same
+// wall-clock time for every HR/IT reviewer regardless of where they open the dashboard from.
+function formatResultTime(value) {
+  return new Date(value).toLocaleString("en-US", {
+    timeZone: "America/New_York",
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZoneName: "short",
+  });
+}
+
 function SpecRow({ label, value }) {
   return (
     <div>
@@ -25,9 +37,7 @@ function TestResultModal({ applicant, onClose }) {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-900">{applicant.name}</p>
-              <p className="text-xs text-gray-500">
-                {new Date(result.submittedAt).toLocaleString()}
-              </p>
+              <p className="text-xs text-gray-500">{formatResultTime(result.submittedAt)}</p>
             </div>
             <Badge status={result.passFail} />
           </div>

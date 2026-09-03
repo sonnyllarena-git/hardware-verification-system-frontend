@@ -40,9 +40,6 @@ function SettingsPage() {
       <h1 className="mb-1 text-2xl font-semibold text-gray-900">
         Hardware Compliance Requirements
       </h1>
-      <p className="mb-4 inline-block rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-700">
-        Phase 1: Changes not saved to database.
-      </p>
 
       <div className="mb-4 flex gap-2">
         {OS_TABS.map((tab) => (

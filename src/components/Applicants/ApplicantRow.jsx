@@ -1,6 +1,7 @@
 import { useState } from "react";
 import ActionButtons from "./ActionButtons";
 import ApplicantHistory from "./ApplicantHistory";
+import { parseDbTimestamp } from "../../utils/dateTime";
 
 const STATUS_LABELS = {
   pending_email: { text: "pending (email)", className: "bg-amber-100 text-amber-700" },
@@ -12,9 +13,8 @@ const STATUS_LABELS = {
 // Deterministic given a fixed input date — not the impure Date.now()/Math.random()
 // pattern this repo's eslint-plugin-react-hooks purity rule flags, so no hoisting concern.
 function formatExpiry(value) {
-  if (!value) return null;
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return null;
+  const date = parseDbTimestamp(value);
+  if (!date) return null;
   const formatted = date.toLocaleString(undefined, {
     month: "short",
     day: "numeric",

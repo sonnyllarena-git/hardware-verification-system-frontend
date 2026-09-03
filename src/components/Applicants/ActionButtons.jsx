@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Modal from "../Modal";
 import { generateLink, revokeLink } from "../../services/applicantsService";
+import { parseDbTimestamp } from "../../utils/dateTime";
 
 const BUTTON_CLASS =
   "cursor-pointer rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50";
@@ -9,8 +10,9 @@ const BUTTON_CLASS =
 // eslint-plugin-react-hooks purity rule — see LESSONS.md 2026-09-01 "Build & Tooling" entry.
 // `new Date()` (current time) is only safe to call outside the component body.
 function isLinkExpired(apiKeyExpiresAt) {
-  if (!apiKeyExpiresAt) return false;
-  return new Date(apiKeyExpiresAt) < new Date();
+  const expiresAt = parseDbTimestamp(apiKeyExpiresAt);
+  if (!expiresAt) return false;
+  return expiresAt < new Date();
 }
 
 function GenerateLinkButton({ applicant, busy, onGenerate }) {

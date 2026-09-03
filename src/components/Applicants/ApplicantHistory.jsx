@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { fetchApplicantEvents } from "../../services/applicantsService";
+import { parseDbTimestamp } from "../../utils/dateTime";
 
 function formatDateTime(value) {
-  return value ? new Date(value).toLocaleString() : "—";
+  const date = parseDbTimestamp(value);
+  return date ? date.toLocaleString() : "—";
 }
 
 // Same field TestResultModal shows as result.submittedAt — kept in Eastern Time here too so
@@ -10,17 +12,17 @@ function formatDateTime(value) {
 // Intl.DateTimeFormat throws if dateStyle/timeStyle are mixed with individual field options
 // like timeZoneName, so this spells out the fields instead of using the style shorthand.
 function formatResultTime(value) {
-  return value
-    ? new Date(value).toLocaleString("en-US", {
-        timeZone: "America/New_York",
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-        hour: "numeric",
-        minute: "2-digit",
-        timeZoneName: "short",
-      })
-    : "—";
+  const date = parseDbTimestamp(value);
+  if (!date) return "—";
+  return date.toLocaleString("en-US", {
+    timeZone: "America/New_York",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    timeZoneName: "short",
+  });
 }
 
 function formatEventType(eventType) {

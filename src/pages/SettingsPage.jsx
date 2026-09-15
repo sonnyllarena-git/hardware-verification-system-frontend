@@ -119,8 +119,8 @@ function DarkModeSection() {
           }`}
         >
           <span
-            className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${
-              theme === "dark" ? "translate-x-5" : "translate-x-0.5"
+            className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${
+              theme === "dark" ? "translate-x-5" : "translate-x-0"
             }`}
           />
         </button>
@@ -137,13 +137,6 @@ function AboutSection() {
         TCP Hardware Verification System — checks that applicant computers meet TheCreditPros&apos;
         hardware requirements before onboarding, via a Chrome extension that self-reports specs for
         compliance review here.
-      </p>
-      <p className="mt-3 text-sm text-gray-500 dark:text-gray-500">
-        Questions or issues? Contact IT at{" "}
-        <a href="mailto:sonnyl@thecreditpros.com" className="text-blue-600 hover:underline">
-          sonnyl@thecreditpros.com
-        </a>
-        .
       </p>
     </section>
   );

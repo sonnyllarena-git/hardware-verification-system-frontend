@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   BarChart,
   Bar,
@@ -12,16 +12,16 @@ import {
 import { Users, CircleCheck, CircleX, Clock, Monitor, Apple } from "lucide-react";
 import {
   fetchResults,
-  DAILY_BREAKDOWN,
-  WEEKLY_BREAKDOWN,
-  MONTHLY_BREAKDOWN,
+  buildDailyBreakdown,
+  buildWeeklyBreakdown,
+  buildMonthlyBreakdown,
 } from "../services/resultsService";
 import Card from "../components/Card";
 
 const RANGE_OPTIONS = [
-  { key: "daily", label: "Daily", data: DAILY_BREAKDOWN },
-  { key: "weekly", label: "Weekly", data: WEEKLY_BREAKDOWN },
-  { key: "monthly", label: "Monthly", data: MONTHLY_BREAKDOWN },
+  { key: "daily", label: "Daily", build: buildDailyBreakdown },
+  { key: "weekly", label: "Weekly", build: buildWeeklyBreakdown },
+  { key: "monthly", label: "Monthly", build: buildMonthlyBreakdown },
 ];
 
 function DashboardPage() {
@@ -38,7 +38,10 @@ function DashboardPage() {
   const windowsCount = results.filter((result) => result.osFamily === "windows").length;
   const macosCount = results.filter((result) => result.osFamily === "macos").length;
   const osPercent = (count) => (results.length ? Math.round((count / results.length) * 100) : 0);
-  const chartData = RANGE_OPTIONS.find((option) => option.key === range).data;
+  const chartData = useMemo(
+    () => RANGE_OPTIONS.find((option) => option.key === range).build(results),
+    [results, range],
+  );
 
   return (
     <div>

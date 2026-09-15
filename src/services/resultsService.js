@@ -1,4 +1,5 @@
 import axios from "axios";
+import { parseDbTimestamp } from "../utils/dateTime";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -89,26 +90,99 @@ export function buildComplianceBreakdown(requirements, specs) {
   }));
 }
 
-export const DAILY_BREAKDOWN = [
-  { label: "Mon", pass: 8, fail: 2 },
-  { label: "Tue", pass: 10, fail: 1 },
-  { label: "Wed", pass: 6, fail: 3 },
-  { label: "Thu", pass: 12, fail: 2 },
-  { label: "Fri", pass: 9, fail: 4 },
-  { label: "Sat", pass: 3, fail: 1 },
-  { label: "Sun", pass: 2, fail: 0 },
-];
+// The dashboard's other stats (Total/Pass/Fail/Windows/Macbook) already read straight from
+// results — the trend chart is bucketed here on the same Eastern calendar the rest of the app
+// displays times in (see dateTime.js's own comment on this), so "today"/"this week" match what
+// a viewer actually sees on result timestamps rather than drifting with their local timezone.
+const EASTERN_TZ = "America/New_York";
+const DAY_MS = 24 * 60 * 60 * 1000;
+const DAY_LABEL_FORMAT = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+  timeZone: "UTC",
+});
+const MONTH_LABEL_FORMAT = new Intl.DateTimeFormat("en-US", { month: "short", timeZone: "UTC" });
 
-export const WEEKLY_BREAKDOWN = [
-  { label: "Week 1", pass: 40, fail: 10 },
-  { label: "Week 2", pass: 35, fail: 8 },
-  { label: "Week 3", pass: 50, fail: 12 },
-  { label: "Week 4", pass: 45, fail: 9 },
-];
+function easternDateParts(date) {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: EASTERN_TZ,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date);
+  const get = (type) => Number(parts.find((p) => p.type === type).value);
+  return { year: get("year"), month: get("month"), day: get("day") };
+}
 
-export const MONTHLY_BREAKDOWN = [
-  { label: "May", pass: 150, fail: 30 },
-  { label: "Jun", pass: 170, fail: 25 },
-  { label: "Jul", pass: 160, fail: 40 },
-  { label: "Aug", pass: 190, fail: 35 },
-];
+// Represents an Eastern calendar date as a UTC-midnight timestamp — every bucket below only
+// ever compares/labels calendar dates, never real instants, so this keeps the day-math (adding
+// or subtracting whole days) simple and immune to DST shifts.
+function easternDateKey(date) {
+  const { year, month, day } = easternDateParts(date);
+  return Date.UTC(year, month - 1, day);
+}
+
+// PENDING results have no submittedDate and never contributed a PASS/FAIL, so they're excluded
+// before bucketing rather than silently falling out of every date comparison below.
+function submittedPassFailDates(results) {
+  return results
+    .filter((r) => r.status === "PASS" || r.status === "FAIL")
+    .map((r) => ({ status: r.status, date: parseDbTimestamp(r.submittedDate) }))
+    .filter((r) => r.date !== null);
+}
+
+function tallyIntoBuckets(dated, buckets, keyFor) {
+  const byKey = new Map(buckets.map((b) => [b.key, b]));
+  for (const { status, date } of dated) {
+    const bucket = byKey.get(keyFor(date));
+    if (bucket) bucket[status === "PASS" ? "pass" : "fail"] += 1;
+  }
+  return buckets.map(({ label, pass, fail }) => ({ label, pass, fail }));
+}
+
+export function buildDailyBreakdown(results, days = 7) {
+  const todayKey = easternDateKey(new Date());
+  const buckets = Array.from({ length: days }, (_, i) => {
+    const key = todayKey - (days - 1 - i) * DAY_MS;
+    return { key, label: DAY_LABEL_FORMAT.format(key), pass: 0, fail: 0 };
+  });
+  return tallyIntoBuckets(submittedPassFailDates(results), buckets, easternDateKey);
+}
+
+export function buildWeeklyBreakdown(results, weeks = 4) {
+  const todayKey = easternDateKey(new Date());
+  const buckets = Array.from({ length: weeks }, (_, i) => {
+    const weeksAgo = weeks - 1 - i;
+    const start = todayKey - (weeksAgo * 7 + 6) * DAY_MS;
+    return { key: start, label: DAY_LABEL_FORMAT.format(start), pass: 0, fail: 0 };
+  });
+  // A week "key" is its start date; a result belongs to the last bucket whose start it's on or
+  // after, so this walks buckets oldest-to-newest and keeps the latest match. Dates outside the
+  // whole displayed window (older than the first bucket, or somehow after today) match nothing,
+  // rather than spilling into the oldest/newest bucket.
+  const keyFor = (date) => {
+    const day = easternDateKey(date);
+    if (day < buckets[0].key || day > todayKey) return null;
+    let match = buckets[0].key;
+    for (const bucket of buckets) {
+      if (day >= bucket.key) match = bucket.key;
+    }
+    return match;
+  };
+  return tallyIntoBuckets(submittedPassFailDates(results), buckets, keyFor);
+}
+
+export function buildMonthlyBreakdown(results, months = 6) {
+  const { year, month } = easternDateParts(new Date());
+  const currentMonthIndex = year * 12 + (month - 1);
+  const buckets = Array.from({ length: months }, (_, i) => {
+    const monthIndex = currentMonthIndex - (months - 1 - i);
+    const key = Date.UTC(Math.floor(monthIndex / 12), ((monthIndex % 12) + 12) % 12, 1);
+    return { key, label: MONTH_LABEL_FORMAT.format(key), pass: 0, fail: 0 };
+  });
+  const keyFor = (date) => {
+    const { year: y, month: m } = easternDateParts(date);
+    return Date.UTC(y, m - 1, 1);
+  };
+  return tallyIntoBuckets(submittedPassFailDates(results), buckets, keyFor);
+}

@@ -24,7 +24,9 @@ export const COMPLIANCE_REQUIREMENTS = [
       if (version.startsWith("macOS")) {
         return parseFloat(version.replace("macOS ", "")) >= 12;
       }
-      return version === "Windows 11" || version === "Windows 10";
+      // version is "Windows 10 (build N)" / "Windows 11 (build N)" from the extension's
+      // getOSLabel(), not a bare "Windows 10" — match the prefix, not the whole string.
+      return version.startsWith("Windows 11") || version.startsWith("Windows 10");
     },
   },
   { key: "cpuCores", label: "CPU Cores (4+)", check: (specs) => specs.cpuCores >= 4 },

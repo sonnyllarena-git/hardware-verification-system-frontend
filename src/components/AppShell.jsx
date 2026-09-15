@@ -52,7 +52,7 @@ function AppShell() {
         </nav>
       </aside>
 
-      <div className="flex-1">
+      <div className="flex flex-1 flex-col bg-gray-50 dark:bg-gray-950">
         <header className="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4 dark:border-gray-800 dark:bg-gray-900">
           <span className="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
             <ShieldCheck className="h-5 w-5 text-blue-600" />
@@ -70,7 +70,7 @@ function AppShell() {
           </div>
         </header>
 
-        <main className="bg-gray-50 p-6 dark:bg-gray-950">
+        <main className="flex-1 p-6">
           <Outlet />
         </main>
       </div>

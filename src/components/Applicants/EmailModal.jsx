@@ -40,6 +40,7 @@ function EmailModal({ applicant, onClose, onSent }) {
   const [body, setBody] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
+  const [copied, setCopied] = useState(false);
 
   // "Adjusting state when a prop changes" during render (React-documented pattern), not a
   // useEffect — the parent may keep this component mounted persistently and just swap the
@@ -51,6 +52,7 @@ function EmailModal({ applicant, onClose, onSent }) {
     setSubject(DEFAULT_SUBJECT);
     setBody(buildDefaultBody(applicant));
     setError(null);
+    setCopied(false);
   }
 
   if (!applicant) return null;
@@ -66,6 +68,19 @@ function EmailModal({ applicant, onClose, onSent }) {
       setError(err.message);
     } finally {
       setBusy(false);
+    }
+  };
+
+  // Real sending isn't wired up for staff use yet — this is the primary path today: staff
+  // copies the body here and pastes it into Outlook themselves. Send Email (Resend) stays
+  // available alongside it for whenever that's turned on.
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(body);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setError("Couldn't copy to clipboard — please select and copy the text manually.");
     }
   };
 
@@ -96,6 +111,13 @@ function EmailModal({ applicant, onClose, onSent }) {
       {error && <p className="mb-3 text-sm text-red-600">{error}</p>}
 
       <div className="flex items-center gap-3">
+        <button
+          type="button"
+          onClick={handleCopy}
+          className="cursor-pointer rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+        >
+          {copied ? "Copied!" : "Copy to Clipboard"}
+        </button>
         <button
           type="button"
           onClick={handleSend}

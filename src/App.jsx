@@ -6,6 +6,7 @@ import DashboardPage from "./pages/DashboardPage";
 import ApplicantsPage from "./pages/ApplicantsPage";
 import ResultDetailPage from "./pages/ResultDetailPage";
 import SettingsPage from "./pages/SettingsPage";
+import HelpPage from "./pages/HelpPage";
 import AdministrationPage from "./pages/AdministrationPage";
 import DownloadPage from "./pages/DownloadPage";
 import CheckPage from "./pages/CheckPage";
@@ -59,6 +60,7 @@ function App() {
         <Route path="/applicants" element={<ApplicantsPage />} />
         <Route path="/results/:id" element={<ResultDetailPage />} />
         <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/help" element={<HelpPage />} />
         <Route path="/download" element={<DownloadPage />} />
         <Route
           path="/administration"

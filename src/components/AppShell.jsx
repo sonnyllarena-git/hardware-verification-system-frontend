@@ -6,6 +6,7 @@ import {
   ShieldCheck,
   Download,
   Shield,
+  HelpCircle,
 } from "lucide-react";
 import logoIcon from "../tcp logo/Icon-Circle-Orange-Navy.png";
 import { getCurrentUser, logout } from "../services/authService";
@@ -15,6 +16,7 @@ const NAV_ITEMS = [
   { to: "/applicants", label: "Applicants", icon: ClipboardList },
   { to: "/download", label: "Download", icon: Download },
   { to: "/settings", label: "Settings", icon: Settings },
+  { to: "/help", label: "Help", icon: HelpCircle },
   { to: "/administration", label: "Administration", icon: Shield, adminOnly: true },
 ];
 

@@ -15,33 +15,76 @@ export async function deleteResult(id) {
   }
 }
 
-export const COMPLIANCE_REQUIREMENTS = [
-  {
-    key: "osVersion",
-    label: "OS Version",
-    check: (specs) => {
-      const version = specs.osVersion ?? "";
-      if (version.startsWith("macOS")) {
-        return parseFloat(version.replace("macOS ", "")) >= 12;
+// Type order the compliance breakdown displays in — mirrors the order the old hardcoded list
+// used (os, cpu, ram, storage, internet, screen, hardware).
+const TYPE_ORDER = ["os", "cpu", "ram", "storage", "internet", "screen", "hardware"];
+
+// Mirrors tcp-hardware-check-api's routes/submit.js checkRequirement() (and direct-submit-rpc.sql's
+// equivalent CASE) so the dashboard's displayed PASS/FAIL matches what actually gated the
+// applicant's status, using the admin's live Settings values instead of hardcoded thresholds.
+function checkRequirement(requirement, specs) {
+  const min = requirement.minValue;
+  switch (requirement.type) {
+    case "os":
+      if (requirement.appliesTo === "macos") {
+        const minMajor = Number(min.match(/(\d+)/)?.[1] ?? "999");
+        const applicantMajor = Number(specs.osVersion?.match(/macOS\s+(\d+)/)?.[1] ?? "-1");
+        return applicantMajor >= minMajor;
       }
-      // version is "Windows 10 (build N)" / "Windows 11 (build N)" from the extension's
+      // specs.osVersion is "Windows 10 (build N)" / "Windows 11 (build N)" from the extension's
       // getOSLabel(), not a bare "Windows 10" — match the prefix, not the whole string.
-      return version.startsWith("Windows 11") || version.startsWith("Windows 10");
-    },
-  },
-  { key: "cpuCores", label: "CPU Cores (4+)", check: (specs) => specs.cpuCores >= 4 },
-  { key: "ram", label: "RAM (8GB+)", check: (specs) => specs.ram >= 8 },
-  { key: "storageGb", label: "Storage (256GB+)", check: (specs) => specs.storageGb >= 256 },
-  {
-    key: "internetDown",
-    label: "Internet Down (15 Mbps+)",
-    check: (specs) => specs.internetDown >= 15,
-  },
-  { key: "internetUp", label: "Internet Up (5 Mbps+)", check: (specs) => specs.internetUp >= 5 },
-  { key: "screenResolution", label: "Screen (720p+)", check: (specs) => specs.screenHeight >= 720 },
-  { key: "webcam", label: "Webcam", check: (specs) => specs.webcam === true },
-  { key: "headset", label: "Headset", check: (specs) => specs.headset === true },
-];
+      return specs.osVersion?.startsWith("Windows 10") || specs.osVersion?.startsWith("Windows 11");
+    case "cpu":
+      return specs.cpuCores >= Number(min);
+    case "ram":
+      return specs.ram >= Number(min);
+    case "storage":
+      return specs.storageGb >= Number(min);
+    case "internet":
+      return requirement.name.includes("Down")
+        ? specs.internetDown >= Number(min)
+        : specs.internetUp >= Number(min);
+    case "screen":
+      return specs.screenHeight >= Number(min.split("x")[1]);
+    case "hardware":
+      return requirement.name === "Webcam" ? specs.webcam === true : specs.headset === true;
+    default:
+      return true;
+  }
+}
+
+// requirement_name already carries its own units (e.g. "RAM (GB)", "Internet Speed Down
+// (Mbps)") from db-schema.sql's seed data, so the min value is appended plainly rather than
+// re-adding units — a hardware requirement (Webcam/Headset) has no numeric min to show.
+function formatRequirementLabel(requirement) {
+  if (requirement.type === "hardware") return requirement.name;
+  if (requirement.type === "screen") {
+    return `${requirement.name} (min: ${requirement.minValue.split("x")[1]}p)`;
+  }
+  return `${requirement.name} (min: ${requirement.minValue})`;
+}
+
+// Builds the compliance breakdown from the admin's actual configured requirements (Settings
+// page) rather than a hardcoded list, so e.g. a macOS applicant is checked and labeled against
+// "macOS 12" while a Windows one sees "Windows 10" — whatever is currently configured.
+export function buildComplianceBreakdown(requirements, specs) {
+  const osFamily = (specs.osVersion ?? "").startsWith("macOS") ? "macos" : "windows";
+  const applicable = requirements
+    .filter((r) => r.appliesTo === osFamily)
+    .sort((a, b) => {
+      const orderDiff = TYPE_ORDER.indexOf(a.type) - TYPE_ORDER.indexOf(b.type);
+      if (orderDiff !== 0) return orderDiff;
+      if (a.type === "internet") return a.name.includes("Down") ? -1 : 1;
+      if (a.type === "hardware") return a.name === "Webcam" ? -1 : 1;
+      return 0;
+    });
+
+  return applicable.map((requirement) => ({
+    key: requirement.id,
+    label: formatRequirementLabel(requirement),
+    passed: checkRequirement(requirement, specs),
+  }));
+}
 
 export const DAILY_BREAKDOWN = [
   { label: "Mon", pass: 8, fail: 2 },

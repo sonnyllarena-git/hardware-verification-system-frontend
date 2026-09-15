@@ -1,6 +1,8 @@
+import { useState, useEffect } from "react";
 import Modal from "../Modal";
 import Badge from "../Badge";
-import { COMPLIANCE_REQUIREMENTS } from "../../services/resultsService";
+import { buildComplianceBreakdown } from "../../services/resultsService";
+import { fetchRequirements } from "../../services/requirementsService";
 import { parseDbTimestamp } from "../../utils/dateTime";
 
 // Format in Eastern explicitly (rather than the viewer's own browser/OS timezone via a bare
@@ -32,12 +34,23 @@ function SpecRow({ label, value }) {
 }
 
 function TestResultModal({ applicant, onClose }) {
+  const [requirements, setRequirements] = useState([]);
+
+  // Fetched once (not per-applicant) since requirements rarely change and this modal stays
+  // mounted across the page's lifetime — see ApplicantsPage, which always renders it.
+  useEffect(() => {
+    fetchRequirements()
+      .then(setRequirements)
+      .catch(() => setRequirements([]));
+  }, []);
+
   if (!applicant) return null;
 
   const { result } = applicant;
+  const breakdown = result ? buildComplianceBreakdown(requirements, result.specs) : [];
 
   return (
-    <Modal title="Hardware Check Result" onClose={onClose}>
+    <Modal title="Hardware Check Result" onClose={onClose} maxWidth="max-w-2xl">
       {!result ? (
         <p className="text-sm text-gray-500">No result yet.</p>
       ) : (
@@ -80,20 +93,17 @@ function TestResultModal({ applicant, onClose }) {
               Compliance Breakdown
             </h3>
             <ul className="divide-y divide-gray-100">
-              {COMPLIANCE_REQUIREMENTS.map((requirement) => {
-                const passed = requirement.check(result.specs);
-                return (
-                  <li
-                    key={requirement.key}
-                    className="flex items-center justify-between px-3 py-2 text-sm"
-                  >
-                    <span className="text-gray-700">{requirement.label}</span>
-                    <span className={passed ? "text-green-600" : "text-red-600"}>
-                      {passed ? "PASS" : "FAIL"}
-                    </span>
-                  </li>
-                );
-              })}
+              {breakdown.map((requirement) => (
+                <li
+                  key={requirement.key}
+                  className="flex items-center justify-between px-3 py-2 text-sm"
+                >
+                  <span className="text-gray-700">{requirement.label}</span>
+                  <span className={requirement.passed ? "text-green-600" : "text-red-600"}>
+                    {requirement.passed ? "PASS" : "FAIL"}
+                  </span>
+                </li>
+              ))}
             </ul>
           </div>
         </div>

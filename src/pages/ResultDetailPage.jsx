@@ -1,15 +1,20 @@
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Check, X, Monitor, Apple } from "lucide-react";
-import { fetchResults, COMPLIANCE_REQUIREMENTS } from "../services/resultsService";
+import { fetchResults, buildComplianceBreakdown } from "../services/resultsService";
+import { fetchRequirements } from "../services/requirementsService";
 import Badge from "../components/Badge";
 
 function ResultDetailPage() {
   const { id } = useParams();
   const [results, setResults] = useState(null);
+  const [requirements, setRequirements] = useState([]);
 
   useEffect(() => {
     fetchResults().then(setResults);
+    fetchRequirements()
+      .then(setRequirements)
+      .catch(() => setRequirements([]));
   }, []);
 
   if (results === null) {
@@ -61,22 +66,19 @@ function ResultDetailPage() {
               Compliance Checklist
             </h2>
             <ul className="divide-y divide-gray-100">
-              {COMPLIANCE_REQUIREMENTS.map((requirement) => {
-                const passed = requirement.check(result.specs);
-                return (
-                  <li
-                    key={requirement.key}
-                    className="flex items-center justify-between px-4 py-2.5 text-sm"
-                  >
-                    <span className="text-gray-700">{requirement.label}</span>
-                    {passed ? (
-                      <Check className="h-4 w-4 text-green-600" />
-                    ) : (
-                      <X className="h-4 w-4 text-red-600" />
-                    )}
-                  </li>
-                );
-              })}
+              {buildComplianceBreakdown(requirements, result.specs).map((requirement) => (
+                <li
+                  key={requirement.key}
+                  className="flex items-center justify-between px-4 py-2.5 text-sm"
+                >
+                  <span className="text-gray-700">{requirement.label}</span>
+                  {requirement.passed ? (
+                    <Check className="h-4 w-4 text-green-600" />
+                  ) : (
+                    <X className="h-4 w-4 text-red-600" />
+                  )}
+                </li>
+              ))}
             </ul>
           </div>
 

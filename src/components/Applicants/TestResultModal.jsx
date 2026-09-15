@@ -81,7 +81,6 @@ function TestResultModal({ applicant, onClose }) {
                 </div>
               )}
               <SpecRow label="Screen" value={result.specs.screenResolution} />
-              <SpecRow label="Network Connection" value={result.specs.networkType ?? "—"} />
               <SpecRow label="Internet Down (Mbps)" value={result.specs.internetDown} />
               <SpecRow label="Internet Up (Mbps)" value={result.specs.internetUp} />
               <SpecRow label="Webcam" value={result.specs.webcam ? "Yes" : "No"} />

@@ -8,8 +8,6 @@ const APPLIES_TO_OPTIONS = [
   { value: "macos", label: "Macbook" },
 ];
 
-const generateRequirementId = () => Date.now();
-
 const emptyRequirement = {
   name: "",
   type: TYPE_OPTIONS[0],
@@ -28,7 +26,7 @@ function RequirementModal({ requirement, onSave, onClose }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    onSave(isEdit ? form : { ...form, id: generateRequirementId() });
+    onSave(form);
   };
 
   return (

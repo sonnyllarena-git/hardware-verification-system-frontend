@@ -1,8 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
-import { REQUIREMENTS_CONFIG } from "../services/requirementsService";
+import {
+  fetchRequirements,
+  createRequirement,
+  updateRequirement,
+  deleteRequirement,
+} from "../services/requirementsService";
 import RequirementTable from "../components/RequirementTable";
 import RequirementModal from "../components/RequirementModal";
+import Toast from "../components/Toast";
 
 const OS_TABS = [
   { value: "windows", label: "Windows" },
@@ -10,29 +16,49 @@ const OS_TABS = [
 ];
 
 function SettingsPage() {
-  const [requirements, setRequirements] = useState(REQUIREMENTS_CONFIG);
+  const [requirements, setRequirements] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [osFilter, setOsFilter] = useState("windows");
   const [editingRequirement, setEditingRequirement] = useState(null);
   const [isAdding, setIsAdding] = useState(false);
-  const [justSaved, setJustSaved] = useState(false);
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message, type = "success") => setToast({ message, type });
+
+  useEffect(() => {
+    fetchRequirements()
+      .then(setRequirements)
+      .catch((err) => showToast(err.message, "error"))
+      .finally(() => setLoading(false));
+  }, []);
 
   const handleSaveEdit = (updated) => {
-    setRequirements((current) =>
-      current.map((requirement) => (requirement.id === updated.id ? updated : requirement)),
-    );
-    setEditingRequirement(null);
-    setJustSaved(false);
+    updateRequirement(updated.id, updated)
+      .then((saved) => {
+        setRequirements((current) => current.map((r) => (r.id === saved.id ? saved : r)));
+        setEditingRequirement(null);
+        showToast("Requirement updated.");
+      })
+      .catch((err) => showToast(err.message, "error"));
   };
 
   const handleCreate = (created) => {
-    setRequirements((current) => [...current, created]);
-    setIsAdding(false);
-    setJustSaved(false);
+    createRequirement(created)
+      .then((saved) => {
+        setRequirements((current) => [...current, saved]);
+        setIsAdding(false);
+        showToast("Requirement created.");
+      })
+      .catch((err) => showToast(err.message, "error"));
   };
 
   const handleDelete = (id) => {
-    setRequirements((current) => current.filter((requirement) => requirement.id !== id));
-    setJustSaved(false);
+    deleteRequirement(id)
+      .then(() => {
+        setRequirements((current) => current.filter((requirement) => requirement.id !== id));
+        showToast("Requirement deleted.");
+      })
+      .catch((err) => showToast(err.message, "error"));
   };
 
   return (
@@ -58,14 +84,18 @@ function SettingsPage() {
         ))}
       </div>
 
-      <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
-        <RequirementTable
-          requirements={requirements}
-          osFilter={osFilter}
-          onEdit={setEditingRequirement}
-          onDelete={handleDelete}
-        />
-      </div>
+      {loading ? (
+        <p className="text-sm text-gray-500">Loading requirements…</p>
+      ) : (
+        <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
+          <RequirementTable
+            requirements={requirements}
+            osFilter={osFilter}
+            onEdit={setEditingRequirement}
+            onDelete={handleDelete}
+          />
+        </div>
+      )}
 
       <div className="mt-4 flex items-center gap-3">
         <button
@@ -76,16 +106,6 @@ function SettingsPage() {
           <Plus className="h-4 w-4" />
           Add New Requirement
         </button>
-        <button
-          type="button"
-          onClick={() => setJustSaved(true)}
-          className="cursor-pointer rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
-        >
-          Save All Changes
-        </button>
-        {justSaved && (
-          <span className="text-sm text-gray-500">Saved locally — Phase 1 mock only.</span>
-        )}
       </div>
 
       {editingRequirement && (
@@ -102,6 +122,10 @@ function SettingsPage() {
           onSave={handleCreate}
           onClose={() => setIsAdding(false)}
         />
+      )}
+
+      {toast && (
+        <Toast message={toast.message} type={toast.type} onDismiss={() => setToast(null)} />
       )}
     </div>
   );

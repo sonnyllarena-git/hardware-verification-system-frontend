@@ -26,15 +26,20 @@ const TYPE_ORDER = ["os", "cpu", "ram", "storage", "internet", "screen", "hardwa
 function checkRequirement(requirement, specs) {
   const min = requirement.minValue;
   switch (requirement.type) {
-    case "os":
-      if (requirement.appliesTo === "macos") {
-        const minMajor = Number(min.match(/(\d+)/)?.[1] ?? "999");
-        const applicantMajor = Number(specs.osVersion?.match(/macOS\s+(\d+)/)?.[1] ?? "-1");
-        return applicantMajor >= minMajor;
-      }
-      // specs.osVersion is "Windows 10 (build N)" / "Windows 11 (build N)" from the extension's
-      // getOSLabel(), not a bare "Windows 10" — match the prefix, not the whole string.
-      return specs.osVersion?.startsWith("Windows 10") || specs.osVersion?.startsWith("Windows 11");
+    case "os": {
+      // min is like "macOS 12" / "Windows 11"; specs.osVersion is like "macOS 14.6.2" or
+      // "Windows 10 (build N)" (see the extension's getOSLabel()) — compare major version
+      // numerically, fail closed if either isn't parseable. This used to special-case Windows
+      // as "is it 10 or 11 at all", which ignored the configured minimum entirely — a
+      // "Windows 11" minimum let a Windows 10 machine through, since 10 or 11 both satisfied
+      // that check.
+      const osLabel = requirement.appliesTo === "macos" ? "macOS" : "Windows";
+      const minMajor = Number(min.match(/(\d+)/)?.[1] ?? "999");
+      const applicantMajor = Number(
+        specs.osVersion?.match(new RegExp(`${osLabel}\\s+(\\d+)`))?.[1] ?? "-1",
+      );
+      return applicantMajor >= minMajor;
+    }
     case "cpu":
       return specs.cpuCores >= Number(min);
     case "ram":

@@ -1,16 +1,14 @@
-import axios from "axios";
+import apiClient from "./apiClient";
 import { parseDbTimestamp } from "../utils/dateTime";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
 export async function fetchResults() {
-  const { data } = await axios.get(`${API_BASE_URL}/results`);
+  const { data } = await apiClient.get("/results");
   return data;
 }
 
 export async function deleteResult(id) {
   try {
-    await axios.delete(`${API_BASE_URL}/results/${id}`);
+    await apiClient.delete(`/results/${id}`);
   } catch (err) {
     throw new Error(err.response?.data?.error ?? "Failed to delete result");
   }

@@ -1,1 +1,5 @@
 @import "tailwindcss";
+
+/* Class-based dark mode (Tailwind v4 CSS-only setup, no tailwind.config.js) — toggled by
+   src/utils/theme.js via a `dark` class on <html>, not just prefers-color-scheme. */
+@custom-variant dark (&:where(.dark, .dark *));

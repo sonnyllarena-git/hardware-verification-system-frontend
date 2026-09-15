@@ -4,10 +4,22 @@ import ApplicantHistory from "./ApplicantHistory";
 import { parseDbTimestamp } from "../../utils/dateTime";
 
 const STATUS_LABELS = {
-  pending_email: { text: "pending (email)", className: "bg-amber-100 text-amber-700" },
-  pending: { text: "pending", className: "bg-blue-100 text-blue-700" },
-  pass: { text: "PASS ✓", className: "bg-green-100 text-green-700" },
-  fail: { text: "FAIL ✗", className: "bg-red-100 text-red-700" },
+  pending_email: {
+    text: "pending (email)",
+    className: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400",
+  },
+  pending: {
+    text: "pending",
+    className: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400",
+  },
+  pass: {
+    text: "PASS ✓",
+    className: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400",
+  },
+  fail: {
+    text: "FAIL ✗",
+    className: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400",
+  },
 };
 
 // Deterministic given a fixed input date — not the impure Date.now()/Math.random()
@@ -27,7 +39,7 @@ function formatExpiry(value) {
 function StatusCell({ applicant }) {
   const config = STATUS_LABELS[applicant.status] ?? {
     text: applicant.status,
-    className: "bg-gray-100 text-gray-600",
+    className: "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400",
   };
   const expiryText =
     applicant.status === "pending" ? formatExpiry(applicant.apiKeyExpiresAt) : null;
@@ -38,7 +50,9 @@ function StatusCell({ applicant }) {
       >
         {config.text}
       </span>
-      {expiryText && <span className="ml-1.5 text-xs text-gray-500">{expiryText}</span>}
+      {expiryText && (
+        <span className="ml-1.5 text-xs text-gray-500 dark:text-gray-400">{expiryText}</span>
+      )}
     </span>
   );
 }
@@ -61,9 +75,9 @@ function ApplicantRow({
 
   return (
     <>
-      <tr className="border-b border-gray-100">
-        <td className="px-4 py-2 text-gray-900">{applicant.name}</td>
-        <td className="px-4 py-2 text-gray-600">{applicant.email}</td>
+      <tr className="border-b border-gray-100 dark:border-gray-800">
+        <td className="px-4 py-2 text-gray-900 dark:text-gray-100">{applicant.name}</td>
+        <td className="px-4 py-2 text-gray-600 dark:text-gray-400">{applicant.email}</td>
         <td className="px-4 py-2">
           <StatusCell applicant={applicant} />
         </td>
@@ -82,14 +96,14 @@ function ApplicantRow({
             type="button"
             onClick={toggleExpanded}
             aria-label={expanded ? "Collapse history" : "Expand history"}
-            className="cursor-pointer text-gray-500 transition-colors hover:text-gray-800"
+            className="cursor-pointer text-gray-500 transition-colors hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
           >
             {expanded ? "▼" : "▶"}
           </button>
         </td>
       </tr>
       {hasExpandedOnce && (
-        <tr hidden={!expanded} className="border-b border-gray-100">
+        <tr hidden={!expanded} className="border-b border-gray-100 dark:border-gray-800">
           <td colSpan={5} className="p-0">
             <ApplicantHistory applicant={applicant} expanded={expanded} />
           </td>

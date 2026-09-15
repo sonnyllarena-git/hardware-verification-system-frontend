@@ -1,18 +1,18 @@
 import { useState } from "react";
 import Modal from "../Modal";
-import { deleteApplicant } from "../../services/applicantsService";
+import { deleteUser } from "../../services/usersService";
 
-function ConfirmDeleteModal({ applicant, onClose, onDeleted }) {
+function ConfirmDeleteUserModal({ user, onClose, onDeleted }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
 
-  if (!applicant) return null;
+  if (!user) return null;
 
   const handleDelete = async () => {
     setBusy(true);
     setError(null);
     try {
-      await deleteApplicant(applicant.id);
+      await deleteUser(user.id);
       onDeleted();
       onClose();
     } catch (err) {
@@ -23,19 +23,9 @@ function ConfirmDeleteModal({ applicant, onClose, onDeleted }) {
   };
 
   return (
-    <Modal title="Delete Applicant" onClose={onClose}>
-      <p className="mb-3 text-sm text-gray-600 dark:text-gray-400">
-        Delete applicant: <strong>{applicant.name}</strong> ({applicant.email})?
-      </p>
-      <p className="mb-1 text-sm text-gray-600 dark:text-gray-400">This will remove:</p>
-      <ul className="mb-3 list-disc space-y-1 pl-5 text-sm text-gray-600 dark:text-gray-400">
-        <li>The applicant record</li>
-        <li>All generated links</li>
-        <li>Event history</li>
-        <li>Any submitted hardware results</li>
-      </ul>
-      <p className="mb-4 text-sm font-medium text-gray-900 dark:text-gray-100">
-        This action cannot be undone.
+    <Modal title="Delete User" onClose={onClose}>
+      <p className="mb-4 text-sm text-gray-600 dark:text-gray-400">
+        Delete user <strong>{user.username}</strong>? This action cannot be undone.
       </p>
 
       {error && <p className="mb-3 text-sm text-red-600">{error}</p>}
@@ -61,4 +51,4 @@ function ConfirmDeleteModal({ applicant, onClose, onDeleted }) {
   );
 }
 
-export default ConfirmDeleteModal;
+export default ConfirmDeleteUserModal;

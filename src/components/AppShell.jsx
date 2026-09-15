@@ -1,5 +1,12 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { LayoutDashboard, ClipboardList, Settings, ShieldCheck, Download } from "lucide-react";
+import {
+  LayoutDashboard,
+  ClipboardList,
+  Settings,
+  ShieldCheck,
+  Download,
+  Shield,
+} from "lucide-react";
 import logoIcon from "../tcp logo/Icon-Circle-Orange-Navy.png";
 import { getCurrentUser, logout } from "../services/authService";
 
@@ -8,10 +15,13 @@ const NAV_ITEMS = [
   { to: "/applicants", label: "Applicants", icon: ClipboardList },
   { to: "/download", label: "Download", icon: Download },
   { to: "/settings", label: "Settings", icon: Settings },
+  { to: "/administration", label: "Administration", icon: Shield, adminOnly: true },
 ];
 
 function AppShell() {
   const navigate = useNavigate();
+  const user = getCurrentUser();
+  const navItems = NAV_ITEMS.filter((item) => !item.adminOnly || user?.role === "admin");
 
   const handleLogout = () => {
     logout();
@@ -25,7 +35,7 @@ function AppShell() {
           <img src={logoIcon} alt="TheCreditPros" className="h-12 w-12" />
         </div>
         <nav className="flex gap-2 md:flex-col">
-          {NAV_ITEMS.map((item) => (
+          {navItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
@@ -43,24 +53,24 @@ function AppShell() {
       </aside>
 
       <div className="flex-1">
-        <header className="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
-          <span className="flex items-center gap-2 text-lg font-semibold text-gray-900">
+        <header className="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4 dark:border-gray-800 dark:bg-gray-900">
+          <span className="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
             <ShieldCheck className="h-5 w-5 text-blue-600" />
             TCP Hardware Check
           </span>
           <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-600">{getCurrentUser()}</span>
+            <span className="text-sm text-gray-600 dark:text-gray-400">{user?.username}</span>
             <button
               type="button"
               onClick={handleLogout}
-              className="cursor-pointer rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+              className="cursor-pointer rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
             >
               Logout
             </button>
           </div>
         </header>
 
-        <main className="bg-gray-50 p-6">
+        <main className="bg-gray-50 p-6 dark:bg-gray-950">
           <Outlet />
         </main>
       </div>

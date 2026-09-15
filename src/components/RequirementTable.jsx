@@ -8,7 +8,7 @@ function RequirementTable({ requirements, osFilter, onEdit, onDelete }) {
   return (
     <table className="w-full border-collapse text-left text-sm">
       <thead>
-        <tr className="border-b border-gray-200 text-gray-500">
+        <tr className="border-b border-gray-200 text-gray-500 dark:border-gray-800 dark:text-gray-400">
           <th className="px-4 py-2 font-medium">Requirement Name</th>
           <th className="px-4 py-2 font-medium">Min Value</th>
           <th className="px-4 py-2 font-medium">Type</th>
@@ -18,11 +18,13 @@ function RequirementTable({ requirements, osFilter, onEdit, onDelete }) {
       </thead>
       <tbody>
         {visibleRequirements.map((requirement) => (
-          <tr key={requirement.id} className="border-b border-gray-100">
-            <td className="px-4 py-2 text-gray-900">{requirement.name}</td>
-            <td className="px-4 py-2 text-gray-600">{requirement.minValue}</td>
-            <td className="px-4 py-2 text-gray-600">{requirement.type}</td>
-            <td className="px-4 py-2 text-gray-600">{requirement.required ? "Yes" : "No"}</td>
+          <tr key={requirement.id} className="border-b border-gray-100 dark:border-gray-800">
+            <td className="px-4 py-2 text-gray-900 dark:text-gray-100">{requirement.name}</td>
+            <td className="px-4 py-2 text-gray-600 dark:text-gray-400">{requirement.minValue}</td>
+            <td className="px-4 py-2 text-gray-600 dark:text-gray-400">{requirement.type}</td>
+            <td className="px-4 py-2 text-gray-600 dark:text-gray-400">
+              {requirement.required ? "Yes" : "No"}
+            </td>
             <td className="px-4 py-2">
               <div className="flex items-center gap-3">
                 <button

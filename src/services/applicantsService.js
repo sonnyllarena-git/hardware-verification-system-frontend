@@ -1,11 +1,9 @@
-import axios from "axios";
+import apiClient from "./apiClient";
 import { getCurrentUser } from "./authService";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export async function generateApiKey({ name, email }) {
   try {
-    const { data } = await axios.post(`${API_BASE_URL}/applicants/generate-key`, { name, email });
+    const { data } = await apiClient.post("/applicants/generate-key", { name, email });
     return data;
   } catch (err) {
     throw new Error(err.response?.data?.error ?? "Failed to generate API key");
@@ -14,7 +12,7 @@ export async function generateApiKey({ name, email }) {
 
 export async function expireApiKey(id) {
   try {
-    const { data } = await axios.post(`${API_BASE_URL}/applicants/${id}/expire-key`);
+    const { data } = await apiClient.post(`/applicants/${id}/expire-key`);
     return data;
   } catch (err) {
     throw new Error(err.response?.data?.error ?? "Failed to expire API key");
@@ -23,7 +21,7 @@ export async function expireApiKey(id) {
 
 export async function fetchApplicants() {
   try {
-    const { data } = await axios.get(`${API_BASE_URL}/applicants`);
+    const { data } = await apiClient.get("/applicants");
     return data;
   } catch (err) {
     throw new Error(err.response?.data?.error ?? "Failed to fetch applicants");
@@ -32,7 +30,7 @@ export async function fetchApplicants() {
 
 export async function addApplicant({ name, email }) {
   try {
-    const { data } = await axios.post(`${API_BASE_URL}/applicants`, { name, email });
+    const { data } = await apiClient.post("/applicants", { name, email });
     return data;
   } catch (err) {
     throw new Error(err.response?.data?.error ?? "Failed to add applicant");
@@ -41,9 +39,9 @@ export async function addApplicant({ name, email }) {
 
 export async function addApplicantsBulk(applicants) {
   try {
-    const { data } = await axios.post(`${API_BASE_URL}/applicants/bulk`, {
+    const { data } = await apiClient.post("/applicants/bulk", {
       applicants,
-      generatedBy: getCurrentUser(),
+      generatedBy: getCurrentUser()?.username,
     });
     return data;
   } catch (err) {
@@ -53,8 +51,8 @@ export async function addApplicantsBulk(applicants) {
 
 export async function generateLink(id) {
   try {
-    const { data } = await axios.post(`${API_BASE_URL}/applicants/${id}/generate-link`, {
-      generatedBy: getCurrentUser(),
+    const { data } = await apiClient.post(`/applicants/${id}/generate-link`, {
+      generatedBy: getCurrentUser()?.username,
     });
     return data;
   } catch (err) {
@@ -64,7 +62,7 @@ export async function generateLink(id) {
 
 export async function revokeLink(id) {
   try {
-    const { data } = await axios.post(`${API_BASE_URL}/applicants/${id}/revoke-link`);
+    const { data } = await apiClient.post(`/applicants/${id}/revoke-link`);
     return data;
   } catch (err) {
     throw new Error(err.response?.data?.error ?? "Failed to revoke link");
@@ -73,7 +71,7 @@ export async function revokeLink(id) {
 
 export async function sendEmail(id, { subject, body }) {
   try {
-    const { data } = await axios.post(`${API_BASE_URL}/applicants/${id}/send-email`, {
+    const { data } = await apiClient.post(`/applicants/${id}/send-email`, {
       subject,
       body,
     });
@@ -85,7 +83,7 @@ export async function sendEmail(id, { subject, body }) {
 
 export async function deleteApplicant(id) {
   try {
-    await axios.delete(`${API_BASE_URL}/applicants/${id}`);
+    await apiClient.delete(`/applicants/${id}`);
   } catch (err) {
     throw new Error(err.response?.data?.error ?? "Failed to delete applicant");
   }
@@ -93,7 +91,7 @@ export async function deleteApplicant(id) {
 
 export async function fetchApplicantEvents(id) {
   try {
-    const { data } = await axios.get(`${API_BASE_URL}/applicants/${id}/events`);
+    const { data } = await apiClient.get(`/applicants/${id}/events`);
     return data;
   } catch (err) {
     throw new Error(err.response?.data?.error ?? "Failed to fetch applicant events");

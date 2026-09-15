@@ -33,22 +33,24 @@ function RequirementModal({ requirement, onSave, onClose }) {
     <Modal title={isEdit ? "Edit Requirement" : "Add Requirement"} onClose={onClose}>
       <form onSubmit={handleSubmit} className="space-y-3">
         <label className="block text-sm">
-          <span className="mb-1 block font-medium text-gray-700">Requirement Name</span>
+          <span className="mb-1 block font-medium text-gray-700 dark:text-gray-300">
+            Requirement Name
+          </span>
           <input
             type="text"
             value={form.name}
             readOnly={isEdit}
             onChange={(event) => updateField("name", event.target.value)}
-            className={`w-full rounded-md border border-gray-300 px-3 py-2 ${isEdit ? "bg-gray-100 text-gray-500" : ""}`}
+            className={`w-full rounded-md border border-gray-300 px-3 py-2 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 ${isEdit ? "bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400" : ""}`}
           />
         </label>
 
         <label className="block text-sm">
-          <span className="mb-1 block font-medium text-gray-700">Type</span>
+          <span className="mb-1 block font-medium text-gray-700 dark:text-gray-300">Type</span>
           <select
             value={form.type}
             onChange={(event) => updateField("type", event.target.value)}
-            className="w-full rounded-md border border-gray-300 px-3 py-2"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
           >
             {TYPE_OPTIONS.map((option) => (
               <option key={option} value={option}>
@@ -59,11 +61,13 @@ function RequirementModal({ requirement, onSave, onClose }) {
         </label>
 
         <label className="block text-sm">
-          <span className="mb-1 block font-medium text-gray-700">Applies To</span>
+          <span className="mb-1 block font-medium text-gray-700 dark:text-gray-300">
+            Applies To
+          </span>
           <select
             value={form.appliesTo}
             onChange={(event) => updateField("appliesTo", event.target.value)}
-            className="w-full rounded-md border border-gray-300 px-3 py-2"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
           >
             {APPLIES_TO_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -74,34 +78,36 @@ function RequirementModal({ requirement, onSave, onClose }) {
         </label>
 
         <label className="block text-sm">
-          <span className="mb-1 block font-medium text-gray-700">Min Value</span>
+          <span className="mb-1 block font-medium text-gray-700 dark:text-gray-300">Min Value</span>
           <input
             type="text"
             value={form.minValue}
             onChange={(event) => updateField("minValue", event.target.value)}
-            className="w-full rounded-md border border-gray-300 px-3 py-2"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
           />
         </label>
 
         <label className="block text-sm">
-          <span className="mb-1 block font-medium text-gray-700">Max Value (optional)</span>
+          <span className="mb-1 block font-medium text-gray-700 dark:text-gray-300">
+            Max Value (optional)
+          </span>
           <input
             type="text"
             value={form.maxValue}
             onChange={(event) => updateField("maxValue", event.target.value)}
-            className="w-full rounded-md border border-gray-300 px-3 py-2"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
           />
         </label>
 
         <div className="flex items-center justify-between text-sm">
-          <span className="font-medium text-gray-700">Required</span>
+          <span className="font-medium text-gray-700 dark:text-gray-300">Required</span>
           <button
             type="button"
             onClick={() => updateField("required", !form.required)}
             className={`cursor-pointer rounded-full px-3 py-1 text-xs font-medium transition-colors ${
               form.required
-                ? "bg-green-100 text-green-700 hover:bg-green-200"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                ? "bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/40 dark:text-green-400 dark:hover:bg-green-900/60"
+                : "bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
             }`}
           >
             {form.required ? "Yes" : "No"}
@@ -109,12 +115,14 @@ function RequirementModal({ requirement, onSave, onClose }) {
         </div>
 
         <label className="block text-sm">
-          <span className="mb-1 block font-medium text-gray-700">Description</span>
+          <span className="mb-1 block font-medium text-gray-700 dark:text-gray-300">
+            Description
+          </span>
           <textarea
             value={form.description}
             onChange={(event) => updateField("description", event.target.value)}
             rows={3}
-            className="w-full rounded-md border border-gray-300 px-3 py-2"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
           />
         </label>
 
@@ -122,7 +130,7 @@ function RequirementModal({ requirement, onSave, onClose }) {
           <button
             type="button"
             onClick={onClose}
-            className="cursor-pointer rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+            className="cursor-pointer rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
           >
             Cancel
           </button>

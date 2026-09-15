@@ -95,11 +95,11 @@ function ApplicantsPage() {
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-gray-900">Applicants</h1>
+        <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Applicants</h1>
         <button
           type="button"
           onClick={() => setBulkModalOpen(true)}
-          className="cursor-pointer rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+          className="cursor-pointer rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
         >
           Bulk Upload
         </button>
@@ -112,12 +112,12 @@ function ApplicantsPage() {
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
             placeholder="Search by name or email"
-            className="rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
           />
           <select
             value={statusFilter}
             onChange={(event) => setStatusFilter(event.target.value)}
-            className="rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
           >
             {STATUS_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -128,7 +128,7 @@ function ApplicantsPage() {
           <button
             type="button"
             onClick={() => exportApplicantsCsv(filteredApplicants)}
-            className="cursor-pointer rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+            className="cursor-pointer rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
           >
             Export CSV
           </button>
@@ -141,7 +141,7 @@ function ApplicantsPage() {
             onChange={(event) => setNewName(event.target.value)}
             placeholder="Applicant Name"
             required
-            className="rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
           />
           <input
             type="email"
@@ -149,7 +149,7 @@ function ApplicantsPage() {
             onChange={(event) => setNewEmail(event.target.value)}
             placeholder="Email"
             required
-            className="rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
           />
           <button
             type="submit"
@@ -162,7 +162,7 @@ function ApplicantsPage() {
       </div>
 
       {loading ? (
-        <p className="text-sm text-gray-500">Loading applicants…</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">Loading applicants…</p>
       ) : (
         <ApplicantsTable
           applicants={filteredApplicants}

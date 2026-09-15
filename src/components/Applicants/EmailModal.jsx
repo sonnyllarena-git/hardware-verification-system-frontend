@@ -13,7 +13,7 @@ function buildDefaultBody(applicant) {
     name: applicant.name,
     email: applicant.email,
   });
-  const hrName = getCurrentUser() ?? "";
+  const hrName = getCurrentUser()?.username ?? "";
 
   return `Hi ${applicant.name},
 
@@ -71,25 +71,25 @@ function EmailModal({ applicant, onClose, onSent }) {
 
   return (
     <Modal title="Send Verification Link" onClose={onClose}>
-      <p className="mb-3 text-sm text-gray-600">To: {applicant.email}</p>
+      <p className="mb-3 text-sm text-gray-600 dark:text-gray-400">To: {applicant.email}</p>
 
       <label className="mb-3 block text-sm">
-        <span className="mb-1 block font-medium text-gray-700">Subject</span>
+        <span className="mb-1 block font-medium text-gray-700 dark:text-gray-300">Subject</span>
         <input
           type="text"
           value={subject}
           onChange={(event) => setSubject(event.target.value)}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
         />
       </label>
 
       <label className="mb-3 block text-sm">
-        <span className="mb-1 block font-medium text-gray-700">Body</span>
+        <span className="mb-1 block font-medium text-gray-700 dark:text-gray-300">Body</span>
         <textarea
           value={body}
           onChange={(event) => setBody(event.target.value)}
           rows={10}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 font-mono text-xs"
+          className="w-full rounded-md border border-gray-300 px-3 py-2 font-mono text-xs dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
         />
       </label>
 
@@ -107,7 +107,7 @@ function EmailModal({ applicant, onClose, onSent }) {
         <button
           type="button"
           onClick={onClose}
-          className="cursor-pointer text-sm font-medium text-gray-600 transition-colors hover:text-gray-900"
+          className="cursor-pointer text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
         >
           Cancel
         </button>

@@ -4,7 +4,7 @@ import { generateLink, revokeLink } from "../../services/applicantsService";
 import { parseDbTimestamp } from "../../utils/dateTime";
 
 const BUTTON_CLASS =
-  "cursor-pointer rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50";
+  "cursor-pointer rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800";
 
 // Hoisted to module level (not defined inside the component) per this repo's
 // eslint-plugin-react-hooks purity rule — see LESSONS.md 2026-09-01 "Build & Tooling" entry.
@@ -91,7 +91,7 @@ function TestResultButton({ applicant, onOpenResultModal }) {
 function RevokeConfirmModal({ busy, onCancel, onConfirm }) {
   return (
     <Modal title="Revoke Link" onClose={onCancel}>
-      <p className="mb-4 text-sm text-gray-600">
+      <p className="mb-4 text-sm text-gray-600 dark:text-gray-400">
         Revoke this link? The applicant will not be able to use it. Generate a new one if needed.
       </p>
       <div className="flex items-center gap-3">
@@ -106,7 +106,7 @@ function RevokeConfirmModal({ busy, onCancel, onConfirm }) {
         <button
           type="button"
           onClick={onCancel}
-          className="cursor-pointer text-sm font-medium text-gray-600 transition-colors hover:text-gray-900"
+          className="cursor-pointer text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
         >
           Cancel
         </button>

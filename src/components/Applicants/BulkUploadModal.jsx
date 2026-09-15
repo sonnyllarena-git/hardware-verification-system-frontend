@@ -113,10 +113,10 @@ function BulkUploadModal({ open, onClose, onUploaded }) {
           {fileError && <p className="mb-3 text-sm text-red-600">{fileError}</p>}
           {rows.length > 0 && (
             <>
-              <div className="mb-3 max-h-64 overflow-auto rounded-md border border-gray-200">
+              <div className="mb-3 max-h-64 overflow-auto rounded-md border border-gray-200 dark:border-gray-800">
                 <table className="w-full text-left text-sm">
                   <thead>
-                    <tr className="border-b border-gray-200 bg-gray-50 text-gray-500">
+                    <tr className="border-b border-gray-200 bg-gray-50 text-gray-500 dark:border-gray-800 dark:bg-gray-800/50 dark:text-gray-400">
                       <th className="px-3 py-2 font-medium">Name</th>
                       <th className="px-3 py-2 font-medium">Email</th>
                     </tr>
@@ -125,12 +125,12 @@ function BulkUploadModal({ open, onClose, onUploaded }) {
                     {rows.map((row, index) => (
                       <tr
                         key={`${row.email}-${index}`}
-                        className={`border-b border-gray-100 ${
-                          row.invalidEmail || row.duplicate ? "bg-red-50" : ""
+                        className={`border-b border-gray-100 dark:border-gray-800 ${
+                          row.invalidEmail || row.duplicate ? "bg-red-50 dark:bg-red-950/40" : ""
                         }`}
                       >
-                        <td className="px-3 py-2 text-gray-900">{row.name}</td>
-                        <td className="px-3 py-2 text-gray-600">
+                        <td className="px-3 py-2 text-gray-900 dark:text-gray-100">{row.name}</td>
+                        <td className="px-3 py-2 text-gray-600 dark:text-gray-400">
                           {row.email}
                           {row.invalidEmail && (
                             <span className="ml-2 text-xs text-red-600">Invalid email</span>
@@ -156,7 +156,7 @@ function BulkUploadModal({ open, onClose, onUploaded }) {
                 <button
                   type="button"
                   onClick={resetAndClose}
-                  className="cursor-pointer text-sm font-medium text-gray-600 transition-colors hover:text-gray-900"
+                  className="cursor-pointer text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
                 >
                   Cancel
                 </button>
@@ -166,13 +166,15 @@ function BulkUploadModal({ open, onClose, onUploaded }) {
         </>
       ) : (
         <>
-          <p className="mb-3 text-sm text-gray-700">{uploadResult.inserted.length} added</p>
+          <p className="mb-3 text-sm text-gray-700 dark:text-gray-300">
+            {uploadResult.inserted.length} added
+          </p>
           {uploadResult.errors.length > 0 && (
-            <div className="mb-3 max-h-64 overflow-auto rounded-md border border-red-200 bg-red-50 p-3">
-              <p className="mb-2 text-sm font-medium text-red-700">
+            <div className="mb-3 max-h-64 overflow-auto rounded-md border border-red-200 bg-red-50 p-3 dark:border-red-900/50 dark:bg-red-950/30">
+              <p className="mb-2 text-sm font-medium text-red-700 dark:text-red-400">
                 {uploadResult.errors.length} failed
               </p>
-              <ul className="space-y-1 text-sm text-red-700">
+              <ul className="space-y-1 text-sm text-red-700 dark:text-red-400">
                 {uploadResult.errors.map((err, index) => (
                   <li key={`${err.email}-${index}`}>
                     {err.name} ({err.email}) — {err.reason}

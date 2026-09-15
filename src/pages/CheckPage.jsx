@@ -33,8 +33,8 @@ function CheckPage() {
               <p className="mb-1 font-semibold text-gray-900">Next steps:</p>
               <ol className="list-decimal space-y-1 pl-5">
                 <li>Open Google Chrome</li>
-                <li>Go to the Chrome Web Store and search "TCP Hardware Checker"</li>
-                <li>Click "Add to Chrome"</li>
+                <li>Go to the Chrome Web Store and search &quot;TCP Hardware Checker&quot;</li>
+                <li>Click &quot;Add to Chrome&quot;</li>
                 <li>Click the TCP Hardware Checker icon in your Chrome toolbar to open it</li>
                 <li>Review your auto-detected hardware</li>
                 <li>Click Submit</li>

@@ -69,8 +69,11 @@ function formatRequirementLabel(requirement) {
 // "macOS 12" while a Windows one sees "Windows 10" — whatever is currently configured.
 export function buildComplianceBreakdown(requirements, specs) {
   const osFamily = (specs.osVersion ?? "").startsWith("macOS") ? "macos" : "windows";
+  // A requirement toggled "Required: No" doesn't gate pass/fail (see routes/submit.js and
+  // direct-submit-rpc.sql) — excluded here too so this breakdown matches what actually decided
+  // the applicant's PASS/FAIL, instead of showing a check that looks decisive but wasn't.
   const applicable = requirements
-    .filter((r) => r.appliesTo === osFamily)
+    .filter((r) => r.appliesTo === osFamily && r.required)
     .sort((a, b) => {
       const orderDiff = TYPE_ORDER.indexOf(a.type) - TYPE_ORDER.indexOf(b.type);
       if (orderDiff !== 0) return orderDiff;

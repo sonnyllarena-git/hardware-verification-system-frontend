@@ -71,6 +71,7 @@ function TestResultModal({ applicant, onClose }) {
             <h3 className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Specs</h3>
             <dl className="grid grid-cols-2 gap-2 text-sm">
               <SpecRow label="OS" value={result.specs.osVersion} />
+              <SpecRow label="CPU" value={result.specs.cpuModel || "Unknown"} />
               <SpecRow label="CPU Cores" value={result.specs.cpuCores} />
               <SpecRow label="RAM (GB)" value={result.specs.ram} />
               <SpecRow label="Total Storage (GB)" value={`${result.specs.storageGb} GB`} />

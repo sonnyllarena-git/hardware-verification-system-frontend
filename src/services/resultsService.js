@@ -18,6 +18,25 @@ export async function deleteResult(id) {
 // used (os, cpu, ram, storage, internet, screen, hardware).
 const TYPE_ORDER = ["os", "cpu", "ram", "storage", "internet", "screen", "hardware"];
 
+// Major version numbers for the only 3 macOS releases HR currently allows: Sonoma (14),
+// Sequoia (15), Tahoe (26 — Apple switched to year-based numbering in 2025, so this isn't 16).
+const APPROVED_MACOS_MAJORS = [14, 15, 26];
+
+// Any Mac (Apple Silicon or Intel) is approved purely by being on one of those 3 OS versions —
+// chip family doesn't matter for Mac. Windows instead gates on CPU family: Intel Core i5/i7/i9
+// or AMD Ryzen 3/5/7/9. Core count isn't part of this gate either way. Duplicated (by hand) in
+// tcp-hardware-check-api's routes/submit.js and direct-submit-rpc.sql — see those files' own
+// copies.
+function isApprovedCpu(specs) {
+  if ((specs.osVersion ?? "").startsWith("macOS")) {
+    const macMajor = Number(specs.osVersion?.match(/macOS\s+(\d+)/)?.[1] ?? "-1");
+    return APPROVED_MACOS_MAJORS.includes(macMajor);
+  }
+
+  const model = (specs.cpuModel ?? "").toLowerCase();
+  return /\bi[579]\b/.test(model) || /ryzen\s*[3579]\b/.test(model);
+}
+
 // Mirrors tcp-hardware-check-api's routes/submit.js checkRequirement() (and direct-submit-rpc.sql's
 // equivalent CASE) so the dashboard's displayed PASS/FAIL matches what actually gated the
 // applicant's status, using the admin's live Settings values instead of hardcoded thresholds.
@@ -39,7 +58,7 @@ function checkRequirement(requirement, specs) {
       return applicantMajor >= minMajor;
     }
     case "cpu":
-      return specs.cpuCores >= Number(min);
+      return isApprovedCpu(specs);
     case "ram":
       return specs.ram >= Number(min);
     case "storage":
@@ -62,6 +81,11 @@ function checkRequirement(requirement, specs) {
 // re-adding units — a hardware requirement (Webcam/Headset) has no numeric min to show.
 function formatRequirementLabel(requirement) {
   if (requirement.type === "hardware") return requirement.name;
+  if (requirement.type === "cpu") {
+    return requirement.appliesTo === "macos"
+      ? `${requirement.name} (macOS Sonoma, Sequoia, or Tahoe)`
+      : `${requirement.name} (Intel i5/i7/i9 or AMD Ryzen 3/5/7/9)`;
+  }
   if (requirement.type === "screen") {
     return `${requirement.name} (min: ${requirement.minValue.split("x")[1]}p)`;
   }

@@ -82,9 +82,13 @@ function checkRequirement(requirement, specs) {
 function formatRequirementLabel(requirement) {
   if (requirement.type === "hardware") return requirement.name;
   if (requirement.type === "cpu") {
+    // The check is fully hardcoded now (see isApprovedCpu above), so the label is too — the
+    // admin's stored requirement.name is stale ("CPU Cores", from before this existed) and
+    // would otherwise read like "CPU Cores (Intel i5/i7/i9...)", mashing the old cores-based
+    // name together with the new family-based description.
     return requirement.appliesTo === "macos"
-      ? `${requirement.name} (macOS Sonoma, Sequoia, or Tahoe)`
-      : `${requirement.name} (Intel i5/i7/i9 or AMD Ryzen 3/5/7/9)`;
+      ? "CPU (macOS Sonoma, Sequoia, or Tahoe)"
+      : "CPU (Intel i5/i7/i9 or AMD Ryzen 3/5/7/9)";
   }
   if (requirement.type === "screen") {
     return `${requirement.name} (min: ${requirement.minValue.split("x")[1]}p)`;

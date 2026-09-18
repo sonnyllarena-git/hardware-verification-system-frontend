@@ -14,10 +14,10 @@ import { getCurrentUser, logout } from "../services/authService";
 const NAV_ITEMS = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/applicants", label: "Applicants", icon: ClipboardList },
+  { to: "/administration", label: "Administration", icon: Shield, adminOnly: true },
   { to: "/download", label: "Download", icon: Download },
   { to: "/settings", label: "Settings", icon: Settings },
   { to: "/help", label: "Help", icon: HelpCircle },
-  { to: "/administration", label: "Administration", icon: Shield, adminOnly: true },
 ];
 
 function AppShell() {

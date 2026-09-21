@@ -3,6 +3,11 @@ import Modal from "./Modal";
 
 const TYPE_OPTIONS = ["os", "cpu", "ram", "storage", "internet", "screen", "hardware"];
 
+// direct-submit-rpc.sql casts min_value to ::INT for these two types when scoring a
+// submission — a decimal here (e.g. "6.88") passes this form fine but throws Postgres
+// error 22P02 at submit time, failing every applicant's hardware check until fixed.
+const INTEGER_TYPES = new Set(["ram", "storage"]);
+
 const APPLIES_TO_OPTIONS = [
   { value: "windows", label: "Windows" },
   { value: "macos", label: "Macbook" },
@@ -21,11 +26,19 @@ const emptyRequirement = {
 function RequirementModal({ requirement, onSave, onClose }) {
   const isEdit = requirement != null;
   const [form, setForm] = useState(isEdit ? { ...requirement } : { ...emptyRequirement });
+  const [minValueError, setMinValueError] = useState(null);
 
   const updateField = (field, value) => setForm((current) => ({ ...current, [field]: value }));
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
+    if (INTEGER_TYPES.has(form.type) && !/^\d+$/.test(form.minValue.trim())) {
+      setMinValueError(`Min Value must be a whole number for "${form.type}" requirements.`);
+      return;
+    }
+    setMinValueError(null);
+
     onSave(form);
   };
 
@@ -82,9 +95,17 @@ function RequirementModal({ requirement, onSave, onClose }) {
           <input
             type="text"
             value={form.minValue}
-            onChange={(event) => updateField("minValue", event.target.value)}
+            onChange={(event) => {
+              updateField("minValue", event.target.value);
+              if (minValueError) setMinValueError(null);
+            }}
             className="w-full rounded-md border border-gray-300 px-3 py-2 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
           />
+          {minValueError && (
+            <span className="mt-1 block text-xs text-red-600 dark:text-red-400">
+              {minValueError}
+            </span>
+          )}
         </label>
 
         <label className="block text-sm">

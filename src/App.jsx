@@ -8,7 +8,6 @@ import ResultDetailPage from "./pages/ResultDetailPage";
 import SettingsPage from "./pages/SettingsPage";
 import HelpPage from "./pages/HelpPage";
 import AdministrationPage from "./pages/AdministrationPage";
-import DownloadPage from "./pages/DownloadPage";
 import CheckPage from "./pages/CheckPage";
 import AppShell from "./components/AppShell";
 import { isAuthenticated, isAdmin, needsOnboarding } from "./services/authService";
@@ -61,7 +60,6 @@ function App() {
         <Route path="/results/:id" element={<ResultDetailPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/help" element={<HelpPage />} />
-        <Route path="/download" element={<DownloadPage />} />
         <Route
           path="/administration"
           element={
